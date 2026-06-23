@@ -71,3 +71,11 @@ export interface TimeBlock {
   activityName: string;
   type: "task" | "rest" | "admin";
 }
+
+export interface User {
+  email: string;
+  name: string;
+  avatarUrl?: string;
+  createdAt: string;
+}
+

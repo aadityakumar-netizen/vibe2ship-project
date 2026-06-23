@@ -40,8 +40,16 @@ export default function RescueGuide({
 
   // Trigger web voice text speech
   const speakText = (text: string) => {
-    if (!soundEnabled || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return;
+    if (!soundEnabled) return;
     try {
+      if (typeof window === "undefined") return;
+      let hasSpeech = false;
+      try {
+        hasSpeech = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+      } catch (_) {}
+      
+      if (!hasSpeech) return;
+      
       const synth = window.speechSynthesis;
       if (!synth) return;
       synth.cancel();
@@ -52,7 +60,7 @@ export default function RescueGuide({
       utterance.pitch = 1.0;
       synth.speak(utterance);
     } catch (e) {
-      console.log("SpeechSynthesis error:", e);
+      console.log("SpeechSynthesis is restricted or unsupported in this sandboxed environment:", e);
     }
   };
 
@@ -165,7 +173,7 @@ export default function RescueGuide({
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-100 flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
         
         {/* Left pane: Active visual timer clock */}
         <div className="md:w-5/12 bg-slate-900 text-white p-8 flex flex-col justify-between items-center text-center relative overflow-hidden">
@@ -267,10 +275,10 @@ export default function RescueGuide({
                 <Brain className="w-4 h-4" />
                 Active Tactical Workroom
               </div>
-              <h2 className="text-xl font-bold text-slate-800">
+              <h2 className="text-xl font-bold text-slate-800 dark:text-slate-150">
                 Action-Led Completion Strategy
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Friction-free, micro-steps suggested by cognitive sorting. Work only on the highlighted active step to avoid splitting attention.
               </p>
             </div>
@@ -286,10 +294,10 @@ export default function RescueGuide({
                     key={st.id}
                     className={`p-4 border rounded-2xl transition-all ${
                       isActive 
-                        ? "bg-rose-50/50 border-rose-200 shadow-sm" 
+                        ? "bg-rose-50/55 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60 shadow-sm" 
                         : isCompleted 
-                        ? "bg-slate-50/50 border-slate-100 opacity-60" 
-                        : "bg-white border-slate-100 opacity-40"
+                        ? "bg-slate-50/50 dark:bg-slate-950/5 border-slate-100 dark:border-slate-850 opacity-60" 
+                        : "bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-850 opacity-40"
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -300,7 +308,7 @@ export default function RescueGuide({
                           </div>
                         ) : (
                           <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center font-bold text-xs ${
-                            isActive ? "border-rose-500 text-rose-600 bg-white" : "border-slate-300 text-slate-400"
+                            isActive ? "border-rose-500 text-rose-600 bg-white dark:bg-slate-900" : "border-slate-300 dark:border-slate-750 text-slate-400 dark:text-slate-600"
                           }`}>
                             {index + 1}
                           </div>
@@ -310,17 +318,17 @@ export default function RescueGuide({
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <h4 className={`text-sm font-semibold ${
-                            isActive ? "text-rose-900" : isCompleted ? "text-slate-600 line-through" : "text-slate-500"
+                            isActive ? "text-rose-900 dark:text-rose-200" : isCompleted ? "text-slate-600 dark:text-slate-400 line-through" : "text-slate-500 dark:text-slate-400"
                           }`}>
                             {st.title}
                           </h4>
                           <span className={`text-[10px] font-medium px-1.5 py-0.2 rounded ${
-                            isActive ? "bg-rose-100 text-rose-800" : "bg-slate-100 text-slate-500"
+                            isActive ? "bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                           }`}>
                             {st.duration} mins
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600 leading-relaxed">
+                        <p className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed">
                           {st.description}
                         </p>
                       </div>
@@ -332,14 +340,14 @@ export default function RescueGuide({
           </div>
 
           {/* Command controls bar below */}
-          <div className="border-t border-slate-100 pt-6 mt-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
+          <div className="border-t border-slate-100 dark:border-slate-850 pt-6 mt-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
             <div className="flex gap-2">
               <button
                 onClick={toggleTimer}
-                className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 cursor-pointer ${
                   isRunning 
-                    ? "bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-200" 
-                    : "bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-100"
+                    ? "bg-amber-100 dark:bg-amber-950/40 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40" 
+                    : "bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-100 dark:shadow-none"
                 }`}
               >
                 {isRunning ? (
@@ -357,7 +365,7 @@ export default function RescueGuide({
 
               <button
                 onClick={skipStep}
-                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm rounded-xl transition flex items-center gap-1.5"
+                className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm rounded-xl transition flex items-center gap-1.5 cursor-pointer"
               >
                 <SkipForward className="w-4 h-4" />
                 Skip Step
@@ -367,7 +375,7 @@ export default function RescueGuide({
             <button
               id="btn-rescue-complete"
               onClick={finishTaskNow}
-              className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-100"
+              className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-100 dark:shadow-none cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4" />
               I'm Done! Submit Work

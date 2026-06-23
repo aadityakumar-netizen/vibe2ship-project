@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { Task } from "../types";
-import { 
-  Sparkles, 
-  Trash2, 
-  Plus, 
-  AlertTriangle, 
-  CheckCircle, 
-  Circle, 
-  Clock, 
-  Grid2X2, 
-  ChevronRight, 
+import VoiceInput from "./VoiceInput";
+import {
+  Sparkles,
+  Trash2,
+  Plus,
+  AlertTriangle,
+  CheckCircle,
+  Circle,
+  Clock,
+  Grid2X2,
+  ChevronRight,
   TrendingUp,
   Brain,
   Zap,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 
 interface TaskPrioritizerProps {
@@ -38,8 +39,10 @@ export default function TaskPrioritizer({
   const [importance, setImportance] = useState<"high" | "normal">("high");
   const [estimatedTime, setEstimatedTime] = useState(45);
   const [category, setCategory] = useState<Task["category"]>("assignment");
-  const [activeTab, setActiveTab] = useState<"list" | "matrix" | "prioritized">("list");
-  
+  const [activeTab, setActiveTab] = useState<"list" | "matrix" | "prioritized">(
+    "list",
+  );
+
   // AI prioritized details
   const [coachInsight, setCoachInsight] = useState<string>("");
   const [stressFactor, setStressFactor] = useState<number | null>(null);
@@ -61,7 +64,7 @@ export default function TaskPrioritizer({
     };
 
     onTasksChange([...tasks, newTask]);
-    
+
     // Reset form
     setTitle("");
     setNotes("");
@@ -72,28 +75,32 @@ export default function TaskPrioritizer({
   };
 
   const toggleTask = (id: string) => {
-    const updated = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+    const updated = tasks.map((t) =>
+      t.id === id ? { ...t, completed: !t.completed } : t,
+    );
     onTasksChange(updated);
   };
 
   const deleteTask = (id: string) => {
-    onTasksChange(tasks.filter(t => t.id !== id));
+    onTasksChange(tasks.filter((t) => t.id !== id));
   };
 
   const requestAiPrioritization = async () => {
-    if (tasks.filter(t => !t.completed).length === 0) return;
+    if (tasks.filter((t) => !t.completed).length === 0) return;
     setIsAiLoading(true);
     try {
       const response = await fetch("/api/gemini/prioritize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tasks: tasks.filter(t => !t.completed) }),
+        body: JSON.stringify({ tasks: tasks.filter((t) => !t.completed) }),
       });
       const data = await response.json();
       if (data.prioritizedTasks) {
         // Merge AI scores back to main tasks list
-        const updated = tasks.map(t => {
-          const matched = data.prioritizedTasks.find((pt: any) => pt.id === t.id);
+        const updated = tasks.map((t) => {
+          const matched = data.prioritizedTasks.find(
+            (pt: any) => pt.id === t.id,
+          );
           if (matched) {
             return {
               ...t,
@@ -119,21 +126,27 @@ export default function TaskPrioritizer({
   // Groups and values helper
   const getQuadrantColor = (q: number) => {
     switch (q) {
-      case 1: return "bg-red-50 text-red-700 border-red-200 hover:bg-red-100/60";
-      case 2: return "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/60";
-      case 3: return "bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100/60";
-      default: return "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100/60";
+      case 1:
+        return "bg-red-50 text-red-700 border-red-200 hover:bg-red-100/60";
+      case 2:
+        return "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/60";
+      case 3:
+        return "bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100/60";
+      default:
+        return "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100/60";
     }
   };
 
-  const activeTasks = tasks.filter(t => !t.completed);
-  const completedTasks = tasks.filter(t => t.completed);
+  const activeTasks = tasks.filter((t) => !t.completed);
+  const completedTasks = tasks.filter((t) => t.completed);
 
   // Sorting for tabs
   const getSortedTasks = () => {
     if (activeTab === "prioritized") {
       // Sort primarily by priorityScore desc, then by date list
-      return [...activeTasks].sort((a, b) => (b.priorityScore || 0) - (a.priorityScore || 0));
+      return [...activeTasks].sort(
+        (a, b) => (b.priorityScore || 0) - (a.priorityScore || 0),
+      );
     }
     return activeTasks;
   };
@@ -141,15 +154,15 @@ export default function TaskPrioritizer({
   return (
     <div id="prioritizer-section" className="space-y-6">
       {/* Tab Switcher and Trigger UI with Professional Accent */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200/60">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200/60 dark:border-slate-800">
           <button
             id="tab-btn-list"
             onClick={() => setActiveTab("list")}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md transition-all ${
-              activeTab === "list" 
-                ? "bg-white text-indigo-600 shadow-sm" 
-                : "text-slate-600 hover:text-indigo-600"
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              activeTab === "list"
+                ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
             }`}
           >
             <Clock className="w-3.5 h-3.5 text-indigo-500" />
@@ -160,10 +173,10 @@ export default function TaskPrioritizer({
             onClick={() => {
               setActiveTab("matrix");
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md transition-all ${
-              activeTab === "matrix" 
-                ? "bg-white text-indigo-600 shadow-sm" 
-                : "text-slate-600 hover:text-indigo-600"
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              activeTab === "matrix"
+                ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
             }`}
           >
             <Grid2X2 className="w-3.5 h-3.5 text-blue-500" />
@@ -172,16 +185,16 @@ export default function TaskPrioritizer({
           <button
             id="tab-btn-prioritized"
             onClick={() => {
-              if (activeTasks.some(t => t.priorityScore)) {
+              if (activeTasks.some((t) => t.priorityScore)) {
                 setActiveTab("prioritized");
               } else {
                 requestAiPrioritization();
               }
             }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md transition-all ${
-              activeTab === "prioritized" 
-                ? "bg-white text-indigo-600 shadow-sm" 
-                : "text-slate-600 hover:text-indigo-600"
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              activeTab === "prioritized"
+                ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-violet-500 animate-pulse" />
@@ -223,7 +236,10 @@ export default function TaskPrioritizer({
                 </h4>
               </div>
               <p className="text-slate-300 text-sm max-w-2xl leading-relaxed italic">
-                "{coachInsight || "We've aligned your schedule to target the highest urgency threats first. Tackle your Top Priority to build sudden unstoppable momentum!"}"
+                "
+                {coachInsight ||
+                  "We've aligned your schedule to target the highest urgency threats first. Tackle your Top Priority to build sudden unstoppable momentum!"}
+                "
               </p>
             </div>
           </div>
@@ -240,70 +256,118 @@ export default function TaskPrioritizer({
 
       {/* Main Panel Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
         {/* Left column: Add task form */}
-        <div className="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5 h-fit sticky top-24">
+        <div className="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-5 h-fit sticky top-24">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-rose-50 rounded-lg text-rose-500">
+            <div className="p-1.5 bg-rose-50 dark:bg-rose-950/40 rounded-lg text-rose-500 shrink-0">
               <Brain className="w-5 h-5" />
             </div>
-            <h3 className="font-semibold text-slate-800 text-lg">Quick Deadline Logger</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-lg">
+              Quick Deadline Logger
+            </h3>
           </div>
-          
+
           <form onSubmit={addTask} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 What's due?
               </label>
-              <input
-                id="input-task-title"
-                type="text"
-                required
-                placeholder="e.g. Physics homework submission, utility payment..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white transition"
-              />
+              <div className="flex gap-2 items-center">
+                <input
+                  id="input-task-title"
+                  type="text"
+                  required
+                  placeholder="e.g. Physics homework, utility payment..."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="flex-1 px-3.5 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                />
+                <VoiceInput
+                  onTranscript={(text) =>
+                    setTitle((prev) => (prev ? prev + " " + text : text))
+                  }
+                  placeholder="Listening for task..."
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Category
                 </label>
                 <select
                   id="select-category"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as Task["category"])}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none transition focus:bg-white"
+                  onChange={(e) =>
+                    setCategory(e.target.value as Task["category"])
+                  }
+                  className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white"
                 >
-                  <option value="assignment">Assignment</option>
-                  <option value="meeting">Meeting</option>
-                  <option value="bill">Bill Payment</option>
-                  <option value="interview">Interview</option>
-                  <option value="other">Other</option>
+                  <option
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+                    value="assignment"
+                  >
+                    Assignment
+                  </option>
+                  <option
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+                    value="meeting"
+                  >
+                    Meeting
+                  </option>
+                  <option
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+                    value="bill"
+                  >
+                    Bill Payment
+                  </option>
+                  <option
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+                    value="interview"
+                  >
+                    Interview
+                  </option>
+                  <option
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+                    value="other"
+                  >
+                    Other
+                  </option>
                 </select>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Priority
                 </label>
                 <select
                   id="select-importance"
                   value={importance}
-                  onChange={(e) => setImportance(e.target.value as "high" | "normal")}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none transition focus:bg-white"
+                  onChange={(e) =>
+                    setImportance(e.target.value as "high" | "normal")
+                  }
+                  className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white"
                 >
-                  <option value="high">🔥 Essential</option>
-                  <option value="normal">☕ Optional / Normal</option>
+                  <option
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+                    value="high"
+                  >
+                    🔥 Essential
+                  </option>
+                  <option
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+                    value="normal"
+                  >
+                    ☕ Optional / Normal
+                  </option>
                 </select>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Deadline Time
                 </label>
                 <input
@@ -312,12 +376,12 @@ export default function TaskPrioritizer({
                   required
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:bg-white transition"
+                  className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Est. Work Minutes
                 </label>
                 <input
@@ -328,13 +392,13 @@ export default function TaskPrioritizer({
                   required
                   value={estimatedTime}
                   onChange={(e) => setEstimatedTime(Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:bg-white transition"
+                  className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Support Details (Notes / Link)
               </label>
               <textarea
@@ -343,14 +407,14 @@ export default function TaskPrioritizer({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white transition resize-none"
+                className="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition resize-none font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
               ></textarea>
             </div>
 
             <button
               id="btn-add-task"
               type="submit"
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-100"
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Save to Core Planner
@@ -360,48 +424,73 @@ export default function TaskPrioritizer({
 
         {/* Right column / Center zone: Lists or Matrix */}
         <div className="lg:col-span-2 space-y-4">
-          
           {activeTab === "matrix" ? (
             /* Eisenhower Matrix Layout */
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-5">
               <div>
-                <h3 className="font-semibold text-slate-800 text-lg">AI Calculated Decision Matrix</h3>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                  Calculated automatically based on your deadlines, priority markers, and estimated work burden.
+                <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-lg">
+                  AI Calculated Decision Matrix
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  Calculated automatically based on your deadlines, priority
+                  markers, and estimated work burden.
                 </p>
               </div>
 
               {/* 2x2 Grid display */}
               <div className="grid grid-cols-2 gap-4">
-                
                 {/* Quadrant 1 */}
-                <div className="bg-rose-50/40 border border-rose-100 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
+                <div className="bg-rose-50/40 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-rose-700 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider">
                         Q1: Do First (Urgent & Imp)
                       </span>
-                      <span className="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>
+                      <span className="w-2 h-2 rounded-full bg-rose-500 inline-block animate-pulse"></span>
                     </div>
-                    <ul className="space-y-1.5 text-xs text-slate-700">
-                      {activeTasks.filter(t => t.quadrant === 1 || (!t.quadrant && t.importance === "high")).slice(0, 3).map(t => (
-                        <li key={t.id} className="truncate flex items-center gap-1">
-                          <AlertTriangle className="w-3 h-3 text-rose-500 shrink-0" />
-                          <span>{t.title}</span>
-                        </li>
-                      ))}
-                      {activeTasks.filter(t => t.quadrant === 1 || (!t.quadrant && t.importance === "high")).length === 0 && (
-                        <span className="text-slate-400 italic">Clear skies here!</span>
+                    <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                      {activeTasks
+                        .filter(
+                          (t) =>
+                            t.quadrant === 1 ||
+                            (!t.quadrant && t.importance === "high"),
+                        )
+                        .slice(0, 3)
+                        .map((t) => (
+                          <li
+                            key={t.id}
+                            className="truncate flex items-center gap-1"
+                          >
+                            <AlertTriangle className="w-3 h-3 text-rose-500 shrink-0" />
+                            <span>{t.title}</span>
+                          </li>
+                        ))}
+                      {activeTasks.filter(
+                        (t) =>
+                          t.quadrant === 1 ||
+                          (!t.quadrant && t.importance === "high"),
+                      ).length === 0 && (
+                        <span className="text-slate-400 dark:text-slate-500 italic">
+                          Clear skies here!
+                        </span>
                       )}
                     </ul>
                   </div>
-                  {activeTasks.filter(t => t.quadrant === 1 || (!t.quadrant && t.importance === "high")).length > 0 && (
-                    <button 
+                  {activeTasks.filter(
+                    (t) =>
+                      t.quadrant === 1 ||
+                      (!t.quadrant && t.importance === "high"),
+                  ).length > 0 && (
+                    <button
                       onClick={() => {
-                        const topTask = activeTasks.find(t => t.quadrant === 1 || (!t.quadrant && t.importance === "high"));
+                        const topTask = activeTasks.find(
+                          (t) =>
+                            t.quadrant === 1 ||
+                            (!t.quadrant && t.importance === "high"),
+                        );
                         if (topTask) onStartRescue(topTask);
                       }}
-                      className="text-[10px] self-start mt-2 px-2.5 py-1.5 bg-rose-600 text-white font-medium rounded-md hover:bg-rose-700 transition"
+                      className="text-[10px] self-start mt-2 px-2.5 py-1.5 bg-rose-600 text-white font-medium rounded-md hover:bg-rose-700 transition cursor-pointer"
                     >
                       Instant AI Rescue
                     </button>
@@ -409,84 +498,120 @@ export default function TaskPrioritizer({
                 </div>
 
                 {/* Quadrant 2 */}
-                <div className="bg-amber-50/40 border border-amber-100 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
+                <div className="bg-amber-50/40 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/50 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                         Q2: Schedule (Plan & Guard)
                       </span>
                       <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
                     </div>
-                    <ul className="space-y-1.5 text-xs text-slate-700">
-                      {activeTasks.filter(t => t.quadrant === 2 || (!t.quadrant && t.importance === "normal" && !t.dueDate)).slice(0, 3).map(t => (
-                        <li key={t.id} className="truncate flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-amber-500 shrink-0" />
-                          <span>{t.title}</span>
-                        </li>
-                      ))}
-                      {activeTasks.filter(t => t.quadrant === 2 || (!t.quadrant && t.importance === "normal" && !t.dueDate)).length === 0 && (
-                        <span className="text-slate-400 italic">No scheduled priorities parsed yet.</span>
+                    <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                      {activeTasks
+                        .filter(
+                          (t) =>
+                            t.quadrant === 2 ||
+                            (!t.quadrant &&
+                              t.importance === "normal" &&
+                              !t.dueDate),
+                        )
+                        .slice(0, 3)
+                        .map((t) => (
+                          <li
+                            key={t.id}
+                            className="truncate flex items-center gap-1"
+                          >
+                            <Clock className="w-3 h-3 text-amber-500 shrink-0" />
+                            <span>{t.title}</span>
+                          </li>
+                        ))}
+                      {activeTasks.filter(
+                        (t) =>
+                          t.quadrant === 2 ||
+                          (!t.quadrant &&
+                            t.importance === "normal" &&
+                            !t.dueDate),
+                      ).length === 0 && (
+                        <span className="text-slate-400 dark:text-slate-500 italic">
+                          No scheduled priorities parsed yet.
+                        </span>
                       )}
                     </ul>
                   </div>
                 </div>
 
                 {/* Quadrant 3 */}
-                <div className="bg-blue-50/40 border border-blue-100 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
+                <div className="bg-blue-50/40 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/50 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
                         Q3: Delegate / Batch (Urgent but Normal)
                       </span>
                       <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
                     </div>
-                    <ul className="space-y-1.5 text-xs text-slate-700">
-                      {activeTasks.filter(t => t.quadrant === 3).slice(0, 3).map(t => (
-                        <li key={t.id} className="truncate flex items-center gap-1">
-                          <Zap className="w-3 h-3 text-blue-500 shrink-0" />
-                          <span>{t.title}</span>
-                        </li>
-                      ))}
-                      {activeTasks.filter(t => t.quadrant === 3).length === 0 && (
-                        <span className="text-slate-400 italic">No low-impact urgent stuff.</span>
+                    <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                      {activeTasks
+                        .filter((t) => t.quadrant === 3)
+                        .slice(0, 3)
+                        .map((t) => (
+                          <li
+                            key={t.id}
+                            className="truncate flex items-center gap-1"
+                          >
+                            <Zap className="w-3 h-3 text-blue-500 shrink-0" />
+                            <span>{t.title}</span>
+                          </li>
+                        ))}
+                      {activeTasks.filter((t) => t.quadrant === 3).length ===
+                        0 && (
+                        <span className="text-slate-400 dark:text-slate-500 italic">
+                          No low-impact urgent stuff.
+                        </span>
                       )}
                     </ul>
                   </div>
                 </div>
 
                 {/* Quadrant 4 */}
-                <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
+                <div className="bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 p-4 rounded-xl min-h-[170px] flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                         Q4: Eliminate (Trivial Loops)
                       </span>
                       <span className="w-2 h-2 rounded-full bg-slate-400 inline-block"></span>
                     </div>
-                    <ul className="space-y-1.5 text-xs text-slate-500">
-                      {activeTasks.filter(t => t.quadrant === 4).slice(0, 3).map(t => (
-                        <li key={t.id} className="truncate list-disc pl-3">
-                          <span>{t.title}</span>
-                        </li>
-                      ))}
-                      {activeTasks.filter(t => t.quadrant === 4).length === 0 && (
-                        <span className="text-slate-400 italic">Clean matrix of fluff!</span>
+                    <ul className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+                      {activeTasks
+                        .filter((t) => t.quadrant === 4)
+                        .slice(0, 3)
+                        .map((t) => (
+                          <li key={t.id} className="truncate list-disc pl-3">
+                            <span>{t.title}</span>
+                          </li>
+                        ))}
+                      {activeTasks.filter((t) => t.quadrant === 4).length ===
+                        0 && (
+                        <span className="text-slate-400 dark:text-slate-500 italic">
+                          Clean matrix of fluff!
+                        </span>
                       )}
                     </ul>
                   </div>
                 </div>
-
               </div>
 
-              {!tasks.some(t => t.quadrant) && (
-                <div className="flex items-center justify-center p-6 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
+              {!tasks.some((t) => t.quadrant) && (
+                <div className="flex items-center justify-center p-6 bg-slate-50 dark:bg-slate-950/50 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
                   <div className="text-center">
                     <Sparkles className="w-6 h-6 text-slate-400 mx-auto mb-2 animate-bounce" />
-                    <p className="text-xs text-slate-600 font-medium">No Quadrants calculated yet</p>
-                    <button 
+                    <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                      No Quadrants calculated yet
+                    </p>
+                    <button
                       onClick={requestAiPrioritization}
                       disabled={activeTasks.length === 0 || isAiLoading}
-                      className="mt-2 text-xs text-violet-600 font-medium hover:underline"
+                      className="mt-2 text-xs text-violet-600 dark:text-violet-400 font-medium hover:underline cursor-pointer"
                     >
                       Click "AI Risk Evaluation" above to arrange tasks!
                     </button>
@@ -497,20 +622,22 @@ export default function TaskPrioritizer({
           ) : (
             /* Agenda List or Priority Matrix lists */
             <div className="space-y-4">
-              <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                   <div>
-                    <h3 className="font-semibold text-slate-800 text-base">
-                      {activeTab === "prioritized" ? "🧠 AI-Sequenced Focus Deck" : "📋 Planned Commitments"}
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base">
+                      {activeTab === "prioritized"
+                        ? "🧠 AI-Sequenced Focus Deck"
+                        : "📋 Planned Commitments"}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {activeTab === "prioritized" 
-                        ? "Ordered by immediate systemic threat and energy depletion calculations." 
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      {activeTab === "prioritized"
+                        ? "Ordered by immediate systemic threat and energy depletion calculations."
                         : "Your active tracking ledger. Tick checkboxes to mark accomplishment."}
                     </p>
                   </div>
                   {activeTab !== "prioritized" && completedTasks.length > 0 && (
-                    <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-1 rounded-md">
                       ✓ {completedTasks.length} Completed
                     </span>
                   )}
@@ -518,32 +645,51 @@ export default function TaskPrioritizer({
 
                 <div className="space-y-3">
                   {getSortedTasks().length === 0 ? (
-                    <div className="text-center py-12 bg-slate-50 border border-dashed border-slate-100 rounded-2xl">
-                      <Clock className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                      <p className="text-sm font-medium text-slate-600">No active tasks logged</p>
-                      <p className="text-xs text-slate-400 mt-1">Excellent job! Breathe or log an upcoming deadline.</p>
+                    <div className="text-center py-12 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-100 dark:border-slate-800 rounded-2xl">
+                      <Clock className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto mb-2" />
+                      <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+                        No active tasks logged
+                      </p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                        Excellent job! Breathe or log an upcoming deadline.
+                      </p>
                     </div>
                   ) : (
                     getSortedTasks().map((task) => {
-                      const isOverdue = new Date(task.dueDate).getTime() < new Date().getTime();
-                      const timeString = new Date(task.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                      const dateString = new Date(task.dueDate).toLocaleDateString([], { month: 'short', day: 'numeric' });
-                      
+                      const isOverdue =
+                        new Date(task.dueDate).getTime() < new Date().getTime();
+                      const timeString = new Date(
+                        task.dueDate,
+                      ).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                      const dateString = new Date(
+                        task.dueDate,
+                      ).toLocaleDateString([], {
+                        month: "short",
+                        day: "numeric",
+                      });
+
                       return (
                         <div
                           key={task.id}
                           className={`relative group p-4 border rounded-2xl transition-all shadow-sm ${
-                            task.importance === "high" 
-                              ? "bg-rose-50/20 border-rose-100 hover:border-rose-300/80" 
-                              : "bg-white border-slate-100 hover:border-slate-300/80"
+                            task.importance === "high"
+                              ? "bg-rose-50/20 dark:bg-rose-950/10 border-rose-100 dark:border-rose-900/50 hover:border-rose-300/80 dark:hover:border-rose-850"
+                              : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-300/80 dark:hover:border-slate-700"
                           } ${task.priorityScore ? "pl-14" : ""}`}
                         >
                           {/* AI Priority badge pinned left */}
                           {task.priorityScore && (
                             <div className="absolute left-3 top-0 bottom-0 flex items-center justify-center">
                               <div className="flex flex-col items-center justify-center w-8 h-8 bg-violet-600 text-white rounded-lg shadow-sm">
-                                <span className="text-[9px] uppercase font-bold tracking-tight opacity-80 leading-none">AI</span>
-                                <span className="text-xs font-black leading-none">{task.priorityScore}</span>
+                                <span className="text-[9px] uppercase font-bold tracking-tight opacity-80 leading-none">
+                                  AI
+                                </span>
+                                <span className="text-xs font-black leading-none">
+                                  {task.priorityScore}
+                                </span>
                               </div>
                             </div>
                           )}
@@ -557,22 +703,30 @@ export default function TaskPrioritizer({
                                 {task.completed ? (
                                   <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
                                 ) : (
-                                  <Circle className="w-5 h-5 text-slate-300 hover:text-emerald-500 shrink-0" />
+                                  <Circle className="w-5 h-5 text-slate-300 dark:text-slate-600 hover:text-emerald-500 dark:hover:text-emerald-400 shrink-0" />
                                 )}
                               </button>
-                              
+
                               <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <h4 className={`font-semibold text-slate-900 text-sm ${task.completed ? "line-through text-slate-400" : ""}`}>
+                                  <h4
+                                    className={`font-semibold text-slate-900 dark:text-slate-100 text-sm ${task.completed ? "line-through text-slate-400 dark:text-slate-500" : ""}`}
+                                  >
                                     {task.title}
                                   </h4>
-                                  <span className={`text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-full ${
-                                    task.category === "assignment" ? "bg-indigo-50 text-indigo-700" :
-                                    task.category === "meeting" ? "bg-blue-50 text-blue-700" :
-                                    task.category === "bill" ? "bg-amber-50 text-amber-700" :
-                                    task.category === "interview" ? "bg-emerald-50 text-emerald-700" :
-                                    "bg-slate-100 text-slate-700"
-                                  }`}>
+                                  <span
+                                    className={`text-[10px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded-full ${
+                                      task.category === "assignment"
+                                        ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400"
+                                        : task.category === "meeting"
+                                          ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400"
+                                          : task.category === "bill"
+                                            ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"
+                                            : task.category === "interview"
+                                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400"
+                                              : "bg-slate-100 dark:bg-slate-850 text-slate-700 dark:text-slate-300"
+                                    }`}
+                                  >
                                     {task.category}
                                   </span>
                                   {task.importance === "high" && (
@@ -582,70 +736,78 @@ export default function TaskPrioritizer({
                                   )}
                                 </div>
                                 {task.notes && (
-                                  <p className="text-xs text-slate-500 mt-1 font-normal line-clamp-1">
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal line-clamp-1">
                                     {task.notes}
                                   </p>
                                 )}
-                                
+
                                 <div className="flex items-center gap-3 mt-2 flex-wrap">
-                                  <div className={`flex items-center gap-1.5 text-xs text-slate-500 ${isOverdue ? "text-rose-600 font-medium" : ""}`}>
+                                  <div
+                                    className={`flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 ${isOverdue ? "text-rose-600 dark:text-rose-400 font-medium" : ""}`}
+                                  >
                                     <Clock className="w-3.5 h-3.5" />
                                     <span>
-                                      {dateString} at {timeString} 
+                                      {dateString} at {timeString}
                                       {isOverdue && " (Overdue!)"}
                                     </span>
                                   </div>
-                                  <div className="text-slate-300">•</div>
-                                  <div className="text-xs text-slate-500">
+                                  <div className="text-slate-300 dark:text-slate-700">
+                                    •
+                                  </div>
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                                     {task.estimatedTime} mins required
                                   </div>
                                 </div>
 
                                 {task.delayRisk !== undefined && (
-                                   <div className="mt-3 p-3 rounded-xl border border-rose-100 bg-rose-50/10 space-y-2">
-                                     <div className="flex items-center justify-between text-[11px] font-bold">
-                                       <span className="text-slate-700 uppercase tracking-widest flex items-center gap-1 text-[9px] font-black">
-                                         <AlertTriangle className="w-3.5 h-3.5 text-rose-500 animate-pulse shrink-0" />
-                                         AI Delay Slip Prediction
-                                       </span>
-                                       <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-tight ${
-                                         task.delayRisk > 75 
-                                           ? "bg-red-100 text-red-800 animate-pulse" 
-                                           : task.delayRisk > 40
-                                           ? "bg-amber-100 text-amber-800"
-                                           : "bg-emerald-100 text-emerald-800"
-                                       }`}>
-                                         {task.delayRisk}% RISK INDEX
-                                       </span>
-                                     </div>
-                                     <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                       <div 
-                                         className={`h-full rounded-full transition-all duration-500 ${
-                                           task.delayRisk > 75 
-                                             ? "bg-red-500" 
-                                             : task.delayRisk > 40
-                                             ? "bg-amber-500"
-                                             : "bg-emerald-500"
-                                         }`}
-                                         style={{ width: `${task.delayRisk}%` }}
-                                       ></div>
-                                     </div>
-                                     {task.delayReasoning && (
-                                       <p className="text-[10.5px] text-slate-500 leading-relaxed italic font-medium">
-                                         "Lumina Prediction: {task.delayReasoning}"
-                                       </p>
-                                     )}
-                                   </div>
-                                 )}
-
-                                 {activeTab === "prioritized" && task.explanation && (
-                                  <div className="mt-2.5 p-2.5 bg-violet-50/50 border border-violet-100/60 rounded-xl flex items-start gap-1.5">
-                                    <Brain className="w-3.5 h-3.5 text-violet-500 mt-0.5 shrink-0" />
-                                    <p className="text-[11px] text-slate-600 leading-relaxed italic">
-                                      {task.explanation}
-                                    </p>
+                                  <div className="mt-3 p-3 rounded-xl border border-rose-100 dark:border-rose-900/40 bg-rose-50/10 dark:bg-rose-950/10 space-y-2">
+                                    <div className="flex items-center justify-between text-[11px] font-bold">
+                                      <span className="text-slate-700 dark:text-slate-300 uppercase tracking-widest flex items-center gap-1 text-[9px] font-black">
+                                        <AlertTriangle className="w-3.5 h-3.5 text-rose-500 animate-pulse shrink-0" />
+                                        AI Delay Slip Prediction
+                                      </span>
+                                      <span
+                                        className={`px-2 py-0.5 rounded text-[10px] font-black tracking-tight ${
+                                          task.delayRisk > 75
+                                            ? "bg-red-100 text-red-800 animate-pulse"
+                                            : task.delayRisk > 40
+                                              ? "bg-amber-100 text-amber-800"
+                                              : "bg-emerald-100 text-emerald-800"
+                                        }`}
+                                      >
+                                        {task.delayRisk}% RISK INDEX
+                                      </span>
+                                    </div>
+                                    <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                      <div
+                                        className={`h-full rounded-full transition-all duration-500 ${
+                                          task.delayRisk > 75
+                                            ? "bg-red-500"
+                                            : task.delayRisk > 40
+                                              ? "bg-amber-500"
+                                              : "bg-emerald-500"
+                                        }`}
+                                        style={{ width: `${task.delayRisk}%` }}
+                                      ></div>
+                                    </div>
+                                    {task.delayReasoning && (
+                                      <p className="text-[10.5px] text-slate-500 dark:text-slate-400 leading-relaxed italic font-medium">
+                                        "Lumina Prediction:{" "}
+                                        {task.delayReasoning}"
+                                      </p>
+                                    )}
                                   </div>
                                 )}
+
+                                {activeTab === "prioritized" &&
+                                  task.explanation && (
+                                    <div className="mt-2.5 p-2.5 bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100/60 dark:border-violet-900/40 rounded-xl flex items-start gap-1.5">
+                                      <Brain className="w-3.5 h-3.5 text-violet-500 mt-0.5 shrink-0" />
+                                      <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed italic">
+                                        {task.explanation}
+                                      </p>
+                                    </div>
+                                  )}
                               </div>
                             </div>
 
@@ -653,14 +815,14 @@ export default function TaskPrioritizer({
                             <div className="flex items-center gap-1.5 self-center">
                               <button
                                 onClick={() => onStartRescue(task)}
-                                className="px-3 py-1.5 bg-gradient-to-r from-red-50 to-rose-50 hover:from-rose-500 hover:to-rose-600 border border-rose-100 text-rose-600 hover:text-white text-xs font-semibold rounded-xl transition flex items-center gap-1 shrink-0"
+                                className="px-3 py-1.5 bg-gradient-to-r from-red-50 to-rose-50 dark:from-slate-800 dark:to-slate-850 hover:from-rose-500 hover:to-rose-600 dark:hover:from-rose-600 dark:hover:to-rose-700 border border-rose-100 dark:border-slate-700 text-rose-600 dark:text-rose-400 hover:text-white dark:hover:text-white text-xs font-semibold rounded-xl transition flex items-center gap-1 shrink-0 cursor-pointer"
                               >
                                 <Zap className="w-3 h-3 text-rose-500 group-hover:text-white shrink-0" />
                                 Rescue Mode
                               </button>
                               <button
                                 onClick={() => deleteTask(task.id)}
-                                className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-50 transition"
+                                className="p-2 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -675,20 +837,23 @@ export default function TaskPrioritizer({
 
               {/* Completed tasks slide if they exist & in common view */}
               {activeTab === "list" && completedTasks.length > 0 && (
-                <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                <div className="bg-slate-50/70 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                     Recently Rescued & Completed
                   </h4>
                   <div className="space-y-1.5">
-                    {completedTasks.slice(0, 5).map(task => (
-                      <div key={task.id} className="flex items-center justify-between text-xs text-slate-500">
+                    {completedTasks.slice(0, 5).map((task) => (
+                      <div
+                        key={task.id}
+                        className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400"
+                      >
                         <div className="flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                           <span className="line-through">{task.title}</span>
                         </div>
-                        <button 
+                        <button
                           onClick={() => toggleTask(task.id)}
-                          className="text-[10px] text-slate-400 hover:text-slate-600 underline"
+                          className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 underline cursor-pointer"
                         >
                           Undo
                         </button>
@@ -699,9 +864,7 @@ export default function TaskPrioritizer({
               )}
             </div>
           )}
-
         </div>
-
       </div>
     </div>
   );
