@@ -34,7 +34,7 @@ import {
 export default function App() {
   // Current user accounts states
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [darkMode] = useState<boolean>(true);
   const [authChecked, setAuthChecked] = useState(false);
 
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -54,15 +54,9 @@ export default function App() {
 
   // Initialize and load auth + theme state on mount
   useEffect(() => {
-    // 1. Theme Configuration
-    const cachedTheme = safeLocalStorage.getItem("theme");
-    const isDark = cachedTheme === "dark";
-    setDarkMode(isDark);
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    // 1. Theme Configuration - Permanently dark mode
+    document.documentElement.classList.add("dark");
+    safeLocalStorage.setItem("theme", "dark");
 
     // 2. User Authentication Check
     const cachedUserRaw = safeLocalStorage.getItem("saved_current_life_saver_user_v1");
@@ -77,14 +71,10 @@ export default function App() {
     setAuthChecked(true);
   }, []);
 
-  // Update document dark class when theme toggles
+  // Update document dark class always
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+    document.documentElement.classList.add("dark");
+  }, []);
 
   // Load user-specific cached data whenever currentUser changes
   useEffect(() => {
@@ -269,13 +259,6 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     safeLocalStorage.removeItem("saved_current_life_saver_user_v1");
-  };
-
-  // Theme Toggle Handler
-  const toggleTheme = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    safeLocalStorage.setItem("theme", newMode ? "dark" : "light");
   };
 
   // Save changes back to localStorage with user-specific isolation
@@ -490,14 +473,7 @@ export default function App() {
             </button>
           </div>
 
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 cursor-pointer transition-all border border-slate-800 bg-slate-900 hover:bg-slate-850 text-slate-300 hover:text-white rounded-xl flex items-center justify-center"
-            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          >
-            {darkMode ? <Sun className="w-4 h-4 shrink-0 text-amber-400" /> : <Moon className="w-4 h-4 shrink-0 text-indigo-400" />}
-          </button>
+
 
           {/* User Account Avatar / Information */}
           <div className="flex items-center gap-2 border-l border-slate-800 pl-3 shrink-0">
