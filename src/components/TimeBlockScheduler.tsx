@@ -19,7 +19,8 @@ import {
   Lock,
   Plus,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  Copy
 } from "lucide-react";
 
 interface TimeBlockSchedulerProps {
@@ -52,6 +53,8 @@ export default function TimeBlockScheduler({
   const [syncLog, setSyncLog] = useState<string>("");
   const [showClientInput, setShowClientInput] = useState<boolean>(false);
   const [confirmSyncModal, setConfirmSyncModal] = useState<boolean>(false);
+  const [showSetupGuide, setShowSetupGuide] = useState<boolean>(false);
+  const [copiedRedirect, setCopiedRedirect] = useState<boolean>(false);
 
   const activeTasks = tasks.filter(t => !t.completed);
 
@@ -76,12 +79,18 @@ export default function TimeBlockScheduler({
   }, []);
 
   const initiateGoogleAuth = () => {
-    const clientIdToUse = googleClientId.trim() || "830058348393-example.apps.googleusercontent.com"; // graceful default
+    const trimmedClientId = googleClientId.trim();
+    if (!trimmedClientId || trimmedClientId.includes("-example") || trimmedClientId === "") {
+      setSyncLog("Authentication failed: Google OAuth Client ID is missing.");
+      setSyncStatus("error");
+      setShowSetupGuide(true);
+      return;
+    }
     const redirectUri = `${window.location.origin}/auth/callback`;
-    const scopes = "https://www.googleapis.com/auth/calendar";
+    const scopes = "https://www.googleapis.com/auth/calendar.events";
     
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` + 
-      `client_id=${encodeURIComponent(clientIdToUse)}` +
+      `client_id=${encodeURIComponent(trimmedClientId)}` +
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
       `&response_type=token` +
       `&scope=${encodeURIComponent(scopes)}` +
@@ -493,40 +502,55 @@ export default function TimeBlockScheduler({
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
                     <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 24 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
                     <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
                   </svg>
                   <span>Connect Google Calendar</span>
                 </button>
 
-                {/* Collapsible Developer Option for Client ID Override */}
-                <div className="text-left pt-1">
-                  <button
-                    onClick={() => setShowClientInput(!showClientInput)}
-                    className="text-[10px] text-slate-400 dark:text-slate-500 font-bold hover:text-slate-600 dark:hover:text-slate-355 flex items-center gap-1 cursor-pointer mx-auto"
-                  >
-                    <Lock className="w-3 h-3" />
-                    <span>Configure Developer Settings</span>
-                  </button>
-
-                  {showClientInput && (
-                    <div className="mt-2.5 p-3 bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-850 rounded-xl space-y-2 animate-fade-in text-xs">
-                      <label className="text-[9.5px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">
-                        Google OAuth Client ID
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Paste your client ID here..."
-                        value={googleClientId}
-                        onChange={(e) => setGoogleClientId(e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-750 rounded-lg text-[11px] text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-550 focus:outline-none"
-                      />
-                      <p className="text-[9.5px] text-slate-400 dark:text-slate-500 leading-normal">
-                        Provide your credential client ID from the Google Developer Console to use a custom redirect endpoint.
-                      </p>
+                {(!googleClientId || googleClientId.includes("-example") || showSetupGuide) && (
+                  <div className="mt-4 p-4 text-left bg-indigo-50/50 dark:bg-slate-950/75 border border-indigo-100 dark:border-slate-850 rounded-xl space-y-3 text-xs leading-normal animate-fade-in">
+                    <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-400 font-bold">
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>Google Calendar API Setup Required</span>
                     </div>
-                  )}
-                </div>
+                    <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                      To successfully link your personal Google Calendar, please configure an OAuth Client ID for your applet instance:
+                    </p>
+                    <ol className="list-decimal list-inside text-slate-600 dark:text-slate-400 text-[11px] space-y-1.5 pl-0.5">
+                      <li>
+                        Go to the <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-0.5 font-bold">Google Cloud Console <ExternalLink className="w-2.5 h-2.5 inline" /></a>
+                      </li>
+                      <li>
+                        Create an <strong>OAuth Client ID</strong> credential configured for a <strong>Web Application</strong>.
+                      </li>
+                      <li>
+                        Add this exact <strong>Authorized Redirect URI</strong>:
+                        <div className="mt-1 flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 font-mono text-[9px] text-slate-800 dark:text-slate-200">
+                          <span className="truncate flex-1 select-all">{`${window.location.origin}/auth/callback`}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/auth/callback`);
+                              setCopiedRedirect(true);
+                              setTimeout(() => setCopiedRedirect(false), 2000);
+                            }}
+                            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-850 rounded text-slate-500 transition flex items-center justify-center cursor-pointer shrink-0"
+                            title="Copy to clipboard"
+                          >
+                            {copiedRedirect ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                        </div>
+                      </li>
+                      <li>
+                        In AI Studio, open <strong>Settings &gt; Secrets</strong>, add a secret named <code>VITE_GOOGLE_CLIENT_ID</code>, and paste your client ID there!
+                      </li>
+                    </ol>
+                    <p className="text-[10px] text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 p-2 border border-amber-100 dark:border-amber-900/30 rounded-lg font-medium leading-normal">
+                      💡 Once added, refresh the page and click the sign-in button to connect instantly!
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

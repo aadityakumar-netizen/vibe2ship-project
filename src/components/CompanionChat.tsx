@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   Lightbulb,
   ThumbsUp,
+  Trash2,
 } from "lucide-react";
 
 interface CompanionChatProps {
@@ -196,13 +197,44 @@ export default function CompanionChat({
           </div>
         </div>
 
-        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono tracking-tighter uppercase font-semibold">
-          Strategy Mode Live
-        </span>
+        <div className="flex items-center gap-2.5">
+          {chatHistory.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                onChatHistoryChange([]);
+              }}
+              className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 border border-slate-100 dark:border-slate-800 rounded-lg transition-all duration-150 cursor-pointer shadow-3xs"
+              title="Clear Chat"
+            >
+              <Trash2 className="w-3 h-3 text-rose-500" />
+              <span>Clear Chat</span>
+            </button>
+          )}
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono tracking-tighter uppercase font-semibold hidden sm:inline">
+            Strategy Mode Live
+          </span>
+        </div>
       </div>
 
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto space-y-4 pr-1 min-h-0 py-2">
+        {chatHistory.length === 0 && (
+          <div className="flex flex-col items-center justify-center text-center h-full py-10 space-y-4 px-4 animate-fade-in">
+            <span className="p-4 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-100 dark:border-indigo-900/30 shadow-2xs">
+              <Bot className="w-8 h-8 animate-pulse" />
+            </span>
+            <div className="space-y-1.5">
+              <h4 className="font-bold text-slate-800 dark:text-slate-100 text-xs">
+                No Active Chat Ledger
+              </h4>
+              <p className="text-slate-500 dark:text-slate-400 text-[11px] max-w-xs leading-relaxed">
+                Consult Lumina AI Companion on homework prep, draft extension email messages, or get immediate mental relaxation guidelines.
+              </p>
+            </div>
+          </div>
+        )}
+
         {chatHistory.map((msg, index) => (
           <div
             key={index}

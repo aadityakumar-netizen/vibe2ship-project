@@ -8,6 +8,7 @@ import RescueGuide from "./components/RescueGuide";
 import CompanionChat from "./components/CompanionChat";
 import HabitTracker from "./components/HabitTracker";
 import AuthScreen from "./components/AuthScreen";
+import VoiceAssistant from "./components/VoiceAssistant";
 import { 
   Zap, 
   Hourglass, 
@@ -508,11 +509,11 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
         
         {/* Navigation Tabs bar */}
-        <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 max-w-xs sm:max-w-2xl shadow-2xs">
+        <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 w-full max-w-5xl shadow-2xs overflow-x-auto">
           <button
             id="nav-btn-priorities"
             onClick={() => setActiveNavTab("priorities")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer ${
+            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
               activeNavTab === "priorities"
                 ? "bg-indigo-600 text-white shadow-sm"
                 : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-450 hover:bg-white dark:hover:bg-slate-800"
@@ -523,22 +524,9 @@ export default function App() {
           </button>
           
           <button
-            id="nav-btn-scheduler"
-            onClick={() => setActiveNavTab("scheduler")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer ${
-              activeNavTab === "scheduler"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-indigo-800 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-slate-800"
-            }`}
-          >
-            <Timer className={`w-4 h-4 ${activeNavTab === "scheduler" ? "text-white" : "text-rose-500"}`} />
-            Time-Blocking Calendar
-          </button>
- 
-          <button
             id="nav-btn-study-planner"
             onClick={() => setActiveNavTab("study-planner")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer ${
+            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
               activeNavTab === "study-planner"
                 ? "bg-indigo-600 text-white shadow-sm"
                 : "text-slate-600 dark:text-slate-400 hover:text-emerald-650 dark:hover:text-emerald-500 hover:bg-white dark:hover:bg-slate-800"
@@ -551,10 +539,10 @@ export default function App() {
           <button
             id="nav-btn-habits"
             onClick={() => setActiveNavTab("habits")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer ${
+            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
               activeNavTab === "habits"
                 ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-slate-800"
+                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-450 hover:bg-white dark:hover:bg-slate-800"
             }`}
           >
             <Sparkles className={`w-4 h-4 ${activeNavTab === "habits" ? "text-white" : "text-amber-500"}`} />
@@ -563,15 +551,30 @@ export default function App() {
  
           <button
             id="nav-btn-coach"
-            onClick={() => setActiveNavTab("coach")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer ${
+            onClick={() => {
+              setActiveNavTab("coach");
+            }}
+            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
               activeNavTab === "coach"
                 ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-slate-800"
+                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-450 hover:bg-white dark:hover:bg-slate-800"
             }`}
           >
             <Bot className={`w-4 h-4 ${activeNavTab === "coach" ? "text-white" : "text-violet-500"}`} />
-            Lumina Coach Chat
+            Lumina Coach
+          </button>
+
+          <button
+            id="nav-btn-scheduler"
+            onClick={() => setActiveNavTab("scheduler")}
+            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
+              activeNavTab === "scheduler"
+                ? "bg-indigo-600 text-white shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-450 hover:bg-white dark:hover:bg-slate-800"
+            }`}
+          >
+            <Timer className={`w-4 h-4 ${activeNavTab === "scheduler" ? "text-white" : "text-rose-500"}`} />
+            Time-Blocking Calendar
           </button>
         </div>
 
@@ -593,16 +596,6 @@ export default function App() {
                 setIsAiLoading={setIsAiLoading}
               />
             ))}
-
-          {activeNavTab === "scheduler" && (
-            <TimeBlockScheduler
-              tasks={tasks}
-              timeBlocks={timeBlocks}
-              onBlocksChange={handleBlocksChange}
-              isAiLoading={isAiLoading}
-              setIsAiLoading={setIsAiLoading}
-            />
-          )}
 
           {activeNavTab === "study-planner" && (
             <AutoStudyPlanner
@@ -630,6 +623,16 @@ export default function App() {
               onTasksChange={handleTasksChange}
               chatHistory={chatHistory}
               onChatHistoryChange={handleChatHistoryChange}
+            />
+          )}
+
+          {activeNavTab === "scheduler" && (
+            <TimeBlockScheduler
+              tasks={tasks}
+              timeBlocks={timeBlocks}
+              onBlocksChange={handleBlocksChange}
+              isAiLoading={isAiLoading}
+              setIsAiLoading={setIsAiLoading}
             />
           )}
 
@@ -774,6 +777,8 @@ export default function App() {
           </span>
         </div>
       </footer>
+
+      <VoiceAssistant tasks={tasks} onTasksChange={handleTasksChange} />
 
     </div>
   );

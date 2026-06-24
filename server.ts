@@ -746,6 +746,159 @@ function generateLocalBlueprint(subject: string, profile: string, style: string,
   };
 }
 
+// Helper for offline Multi-Day study planner fallback
+function generateLocalMultiDayBlueprint(subject: string, style: string, targetDaysNum?: number) {
+  const normalized = subject.toLowerCase();
+  
+  // Try to parse days from subject name (e.g. "DSA exam in 10 days")
+  let days = targetDaysNum || 10;
+  const match = subject.match(/(\d+)\s*days?/i);
+  if (match) {
+    days = parseInt(match[1], 10);
+  }
+  
+  // Bound days to realistic range
+  if (days < 1) days = 5;
+  if (days > 30) days = 30;
+
+  const multiDayPlan: any[] = [];
+  
+  // Check for common subjects to make local plan highly accurate
+  const isDSA = normalized.includes("dsa") || normalized.includes("data structure") || normalized.includes("algorithm") || normalized.includes("aktu");
+  const isMath = normalized.includes("math") || normalized.includes("calculus") || normalized.includes("algebra") || normalized.includes("physics");
+  const isCoding = normalized.includes("code") || normalized.includes("coding") || normalized.includes("react") || normalized.includes("javascript") || normalized.includes("web") || normalized.includes("python");
+  const isWeb = normalized.includes("web") || normalized.includes("html") || normalized.includes("css") || normalized.includes("development");
+
+  // Base topic generation
+  for (let d = 1; d <= days; d++) {
+    let title = "";
+    let topics: string[] = [];
+    let technique = "";
+    
+    if (isDSA) {
+      const pct = (d - 1) / (days - 1 || 1);
+      if (pct < 0.1) {
+        title = "Arrays & Memory Layout";
+        topics = ["1D and 2D Arrays", "Dynamic Sizing", "Address Calculation"];
+        technique = "Solve 3 basic array reversal and search questions.";
+      } else if (pct < 0.2) {
+        title = "Linked Lists";
+        topics = ["Singly Linked List", "Doubly Linked List", "Pointer Manipulation"];
+        technique = "Draw list mutations on paper before translating to code.";
+      } else if (pct < 0.3) {
+        title = "Stacks & Expressions";
+        topics = ["Stack Push/Pop", "Infix to Postfix", "Parenthesis Matching"];
+        technique = "Dry-run a recursion stack mentally to visualize LIFO.";
+      } else if (pct < 0.4) {
+        title = "Queues & Priority Queues";
+        topics = ["Circular Queue", "Deque", "Priority Queue Implementation"];
+        technique = "Simulate sliding window queue elements.";
+      } else if (pct < 0.5) {
+        title = "Binary Trees";
+        topics = ["Tree Traversals (Pre/In/Post)", "Height of Tree", "Leaf Count"];
+        technique = "Write down recursive tree relations carefully.";
+      } else if (pct < 0.6) {
+        title = "Binary Search Trees (BST)";
+        topics = ["BST Insertion/Deletion", "Inorder Successor", "Search Efficiency"];
+        technique = "Implement standard BST insert function.";
+      } else if (pct < 0.7) {
+        title = "Heaps & Balanced Trees";
+        topics = ["Min/Max Heap", "Heapify Algorithm", "AVL Trees intro"];
+        technique = "Verify heap property after every insert operation.";
+      } else if (pct < 0.8) {
+        title = "Graphs & Representations";
+        topics = ["Adjacency Matrix/List", "BFS Traversal", "DFS Traversal"];
+        technique = "Trace graph traversals using a visited set.";
+      } else if (pct < 0.9) {
+        title = "Greedy & Dynamic Programming";
+        topics = ["Overlapping Subproblems", "Memoization", "Knapsack/Fibonacci"];
+        technique = "Build tabular states sequentially for DP.";
+      } else {
+        title = "Sorting, Searching & Final Review";
+        topics = ["QuickSort/MergeSort", "Binary Search", "Mock Exam Problems"];
+        technique = "Time yourself on 3 standard exam challenges.";
+      }
+    } else if (isMath) {
+      const pct = (d - 1) / (days - 1 || 1);
+      if (pct < 0.2) {
+        title = "Foundational Formulas & Axioms";
+        topics = ["Basic Definitions", "Formula Derivations", "Initial Practice Sets"];
+        technique = "Active derivation of key equations without looking.";
+      } else if (pct < 0.5) {
+        title = "Core Problem-Solving Sprint";
+        topics = ["Intermediate Equations", "Special Cases", "Boundary Conditions"];
+        technique = "Solve 5 problems with increasing complexity.";
+      } else if (pct < 0.8) {
+        title = "Advanced Techniques & Proofs";
+        topics = ["Theorems Application", "Analytical Proofs", "Complex Scenarios"];
+        technique = "Explain the logic of a complex proof to an imaginary student.";
+      } else {
+        title = "Syllabus Review & Cheat Sheet Dump";
+        topics = ["Past Exam Quizzes", "Time-Constrained Test", "Formula Sheet Check"];
+        technique = "Write down every major formula on a blank sheet in 10 minutes.";
+      }
+    } else if (isCoding || isWeb) {
+      const pct = (d - 1) / (days - 1 || 1);
+      if (pct < 0.2) {
+        title = "Syntax & Environment Setup";
+        topics = ["Core Statements", "Local Project Scaffolding", "Hello World Tests"];
+        technique = "Intentionally create errors to see compiler message logs.";
+      } else if (pct < 0.5) {
+        title = "Logic Flow & Custom Modules";
+        topics = ["State Handling", "Reusable Helpers", "Component Architecture"];
+        technique = "Build a micro-project applying the component pattern.";
+      } else if (pct < 0.8) {
+        title = "Integration & Data Flow";
+        topics = ["API Requests", "State Synchronization", "Form Validations"];
+        technique = "Construct a secure mockup endpoint to test responses.";
+      } else {
+        title = "Refactoring, Optimization & Deploy";
+        topics = ["Performance Tuning", "Linter Cleanups", "Production Builds"];
+        technique = "Run production builds locally and resolve warnings.";
+      }
+    } else {
+      const pct = (d - 1) / (days - 1 || 1);
+      if (pct < 0.25) {
+        title = "Overview & Key Terms";
+        topics = ["Core Vocabulary", "Introductory Material", "Context Mapping"];
+        technique = "Feynman Technique: Define 5 terms in simple sentences.";
+      } else if (pct < 0.5) {
+        title = "Deep Concepts Analysis";
+        topics = ["Primary Mechanics", "Historical Context", "Causal Relationships"];
+        technique = "Mindmap the connections between the major entities.";
+      } else if (pct < 0.75) {
+        title = "Secondary Content & Gaps Review";
+        topics = ["Niche Sub-categories", "Supporting Arguments", "Contrasting Theories"];
+        technique = "Answer practice questions focusing on secondary items.";
+      } else {
+        title = "Syllabus Recall & Summary Sheets";
+        topics = ["Full Syllabus Recap", "High-Yield Summary", "Simulated Quiz"];
+        technique = "Perform a 15-minute complete brain-dump of all topics.";
+      }
+    }
+
+    multiDayPlan.push({
+      dayNumber: d,
+      title: `Day ${d}: ${title}`,
+      topics,
+      technique,
+      durationMinutes: 120
+    });
+  }
+
+  return {
+    subjectName: subject,
+    styleOverview: `Autonomous ${days}-Day Preparatory Blueprint custom tailored for high-retention mastery using ${style || "Active Recall"}.`,
+    planType: "multi",
+    multiDayPlan,
+    milestones: [
+      `Complete foundations (Days 1-${Math.ceil(days * 0.3)})`,
+      `Consolidate core principles (Days ${Math.ceil(days * 0.3) + 1}-${Math.ceil(days * 0.7)})`,
+      `Execute comprehensive review and simulated practice (Days ${Math.ceil(days * 0.7) + 1}-${days})`
+    ]
+  };
+}
+
 // Google OAuth callback endpoint (works flawlessly in sandboxed browser popups)
 app.get(["/auth/callback", "/auth/callback/"], (req, res) => {
   res.send(`
@@ -786,16 +939,59 @@ app.get(["/auth/callback", "/auth/callback/"], (req, res) => {
 
 // API 5: AI Study Blueprint Generator
 app.post("/api/gemini/study-blueprint", async (req, res) => {
-  const { studySubject, studyProfile, cognitiveStyle, availableHours } = req.body;
+  const { studySubject, studyProfile, cognitiveStyle, availableHours, planType, targetDays } = req.body;
   
   const ai = getGeminiClient();
+  const isMultiDay = planType === "multi" || /in\s+\d+\s+days/i.test(studySubject || "") || /\d+\s*days?/i.test(studySubject || "");
+
   if (!ai) {
     console.log("Gemini study blueprint - using robust offline compiler strategy");
+    if (isMultiDay) {
+      return res.json(generateLocalMultiDayBlueprint(studySubject, cognitiveStyle, targetDays));
+    }
     return res.json(generateLocalBlueprint(studySubject, studyProfile, cognitiveStyle, availableHours));
   }
 
   try {
-    const prompt = `You are Lumina, the AI Study & Focus Architecture Engine. 
+    let prompt = "";
+    if (isMultiDay) {
+      // Determine the target days from parameter or parse it from the string
+      let days = targetDays || 10;
+      const match = (studySubject || "").match(/(\d+)\s*days?/i);
+      if (match) {
+        days = parseInt(match[1], 10);
+      }
+      if (days < 1) days = 5;
+      if (days > 30) days = 30;
+
+      prompt = `You are Lumina, the AI Study & Focus Architecture Engine.
+Create an optimized, day-by-day study/prep timeline for a multi-day focus:
+- Subject/Goal: "${studySubject}" (e.g. "AKTU DSA exam in 10 days")
+- Cognitive Style/Focus Strategy: "${cognitiveStyle}" (e.g. Active Recall, Feynman Technique)
+- Duration: ${days} days
+
+You must respond with a strictly valid JSON object matching this structure (no markdown code blocks, no backticks, only pure JSON):
+{
+  "subjectName": "string",
+  "styleOverview": "string (1-2 sentences describing the overarching preparation strategy)",
+  "planType": "multi",
+  "multiDayPlan": [
+    {
+      "dayNumber": number (e.g. 1, 2, 3),
+      "title": "string (e.g. Day 1: Arrays)",
+      "topics": ["string (2-3 detailed subtopics to learn or review on this day)"],
+      "technique": "string (highly specific active technique or task for today's topics)",
+      "durationMinutes": number (estimated minutes of focus for today, e.g. 120)
+    }
+  ],
+  "milestones": [
+    "string (2-3 macro-milestones, e.g. Finish all linear collections by Day 4)"
+  ]
+}
+
+Ensure you generate EXACTLY ${days} day-by-day plan entries in the "multiDayPlan" array (one for each day from Day 1 to Day ${days}). Ensure focus topics are highly relevant and logical (e.g. for DSA, cover Arrays, Linked Lists, Stack, Queue, Trees, BST, Graphs, Sorting, etc.).`;
+    } else {
+      prompt = `You are Lumina, the AI Study & Focus Architecture Engine. 
 Create an optimized, minute-by-minute study or work blueprint for:
 - Subject/Topic: "${studySubject}"
 - Sprint Profile: "${studyProfile}" (e.g., Pomodoro, Ultradian 90/20, Deep Focus)
@@ -806,6 +1002,7 @@ You must respond with a strictly valid JSON object matching this structure (no m
 {
   "subjectName": "string",
   "styleOverview": "string (1-2 sentences describing the cognitive focus strategy)",
+  "planType": "single",
   "sessions": [
     {
       "time": "string (e.g., 00:00 - 00:25)",
@@ -821,6 +1018,7 @@ You must respond with a strictly valid JSON object matching this structure (no m
 }
 
 Ensure the sessions sum up to exactly ${availableHours * 60} minutes. Include refreshing break sessions. Ensure the focus topics are realistic and active techniques are highly practical based on the selected cognitive style "${cognitiveStyle}".`;
+    }
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -831,10 +1029,19 @@ Ensure the sessions sum up to exactly ${availableHours * 60} minutes. Include re
     });
 
     const parsed = JSON.parse(response.text.trim());
+    if (isMultiDay) {
+      parsed.planType = "multi";
+    } else {
+      parsed.planType = "single";
+    }
     res.json(parsed);
   } catch (error: any) {
     console.log("Gemini study-blueprint error - activating fallback compiler:", error?.message || error);
-    res.json(generateLocalBlueprint(studySubject, studyProfile, cognitiveStyle, availableHours));
+    if (isMultiDay) {
+      res.json(generateLocalMultiDayBlueprint(studySubject, cognitiveStyle, targetDays));
+    } else {
+      res.json(generateLocalBlueprint(studySubject, studyProfile, cognitiveStyle, availableHours));
+    }
   }
 });
 

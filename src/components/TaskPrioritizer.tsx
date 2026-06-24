@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Task } from "../types";
 import VoiceInput from "./VoiceInput";
 import {
@@ -15,6 +15,7 @@ import {
   Brain,
   Zap,
   CheckCircle2,
+  Calendar,
 } from "lucide-react";
 
 interface TaskPrioritizerProps {
@@ -32,6 +33,8 @@ export default function TaskPrioritizer({
   isAiLoading,
   setIsAiLoading,
 }: TaskPrioritizerProps) {
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  
   // Task input state
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
@@ -39,7 +42,7 @@ export default function TaskPrioritizer({
   const [importance, setImportance] = useState<"high" | "normal">("high");
   const [estimatedTime, setEstimatedTime] = useState(45);
   const [category, setCategory] = useState<Task["category"]>("assignment");
-  const [activeTab, setActiveTab] = useState<"list" | "matrix" | "prioritized">(
+  const [activeTab, setActiveTab] = useState<"list" | "matrix">(
     "list",
   );
 
@@ -114,7 +117,7 @@ export default function TaskPrioritizer({
         onTasksChange(updated);
         setCoachInsight(data.coachInsight);
         setStressFactor(data.estimatedFrustrationFactor);
-        setActiveTab("prioritized");
+        setActiveTab("list");
       }
     } catch (err) {
       console.error(err);
@@ -142,11 +145,13 @@ export default function TaskPrioritizer({
 
   // Sorting for tabs
   const getSortedTasks = () => {
-    if (activeTab === "prioritized") {
-      // Sort primarily by priorityScore desc, then by date list
-      return [...activeTasks].sort(
-        (a, b) => (b.priorityScore || 0) - (a.priorityScore || 0),
-      );
+    if (activeTab === "list") {
+      // If tasks have priorityScore, sort primarily by priorityScore desc
+      if (activeTasks.some((t) => t.priorityScore !== undefined)) {
+        return [...activeTasks].sort(
+          (a, b) => (b.priorityScore || 0) - (a.priorityScore || 0),
+        );
+      }
     }
     return activeTasks;
   };
@@ -182,24 +187,6 @@ export default function TaskPrioritizer({
             <Grid2X2 className="w-3.5 h-3.5 text-blue-500" />
             Decision Matrix
           </button>
-          <button
-            id="tab-btn-prioritized"
-            onClick={() => {
-              if (activeTasks.some((t) => t.priorityScore)) {
-                setActiveTab("prioritized");
-              } else {
-                requestAiPrioritization();
-              }
-            }}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
-              activeTab === "prioritized"
-                ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-violet-500 animate-pulse" />
-            AI Prioritized Order
-          </button>
         </div>
 
         <button
@@ -222,7 +209,7 @@ export default function TaskPrioritizer({
         </button>
       </div>
 
-      {stressFactor !== null && activeTab === "prioritized" && (
+      {stressFactor !== null && activeTab === "list" && (
         <div className="bg-slate-900 text-white border border-slate-800 p-6 rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-5 shadow-lg">
           <div className="flex items-start gap-4">
             <span className="p-2.5 bg-indigo-600/30 text-indigo-400 rounded-xl border border-indigo-500/20 shrink-0 flex items-center justify-center">
@@ -367,17 +354,23 @@ export default function TaskPrioritizer({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                   Deadline Time
                 </label>
-                <input
-                  id="input-due-date"
-                  type="datetime-local"
-                  required
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white"
-                />
+                <div className="relative flex items-center group">
+                  <span className="absolute left-3 text-indigo-500 dark:text-indigo-400 pointer-events-none flex items-center justify-center z-10">
+                    <Calendar className="w-3.5 h-3.5" />
+                  </span>
+                  <input
+                    id="input-due-date"
+                    ref={dateInputRef}
+                    type="datetime-local"
+                    required
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white cursor-pointer"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
@@ -629,17 +622,17 @@ export default function TaskPrioritizer({
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base">
-                      {activeTab === "prioritized"
+                      {activeTasks.some((t) => t.priorityScore !== undefined)
                         ? "🧠 AI-Sequenced Focus Deck"
                         : "📋 Planned Commitments"}
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      {activeTab === "prioritized"
-                        ? "Ordered by immediate systemic threat and energy depletion calculations."
+                      {activeTasks.some((t) => t.priorityScore !== undefined)
+                        ? "Ordered by immediate systemic threat and energy depletion calculations. Tick checkboxes to mark accomplishment."
                         : "Your active tracking ledger. Tick checkboxes to mark accomplishment."}
                     </p>
                   </div>
-                  {activeTab !== "prioritized" && completedTasks.length > 0 && (
+                  {completedTasks.length > 0 && (
                     <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-1 rounded-md">
                       ✓ {completedTasks.length} Completed
                     </span>
@@ -681,21 +674,8 @@ export default function TaskPrioritizer({
                             task.importance === "high"
                               ? "bg-rose-50/20 dark:bg-rose-950/10 border-rose-100 dark:border-rose-900/50 hover:border-rose-300/80 dark:hover:border-rose-850"
                               : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-300/80 dark:hover:border-slate-700"
-                          } ${task.priorityScore ? "pl-14" : ""}`}
+                          }`}
                         >
-                          {/* AI Priority badge pinned left */}
-                          {task.priorityScore && (
-                            <div className="absolute left-3 top-0 bottom-0 flex items-center justify-center">
-                              <div className="flex flex-col items-center justify-center w-8 h-8 bg-violet-600 text-white rounded-lg shadow-sm">
-                                <span className="text-[9px] uppercase font-bold tracking-tight opacity-80 leading-none">
-                                  AI
-                                </span>
-                                <span className="text-xs font-black leading-none">
-                                  {task.priorityScore}
-                                </span>
-                              </div>
-                            </div>
-                          )}
 
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-2.5">
@@ -802,15 +782,14 @@ export default function TaskPrioritizer({
                                   </div>
                                 )}
 
-                                {activeTab === "prioritized" &&
-                                  task.explanation && (
-                                    <div className="mt-2.5 p-2.5 bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100/60 dark:border-violet-900/40 rounded-xl flex items-start gap-1.5">
-                                      <Brain className="w-3.5 h-3.5 text-violet-500 mt-0.5 shrink-0" />
-                                      <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed italic">
-                                        {task.explanation}
-                                      </p>
-                                    </div>
-                                  )}
+                                {task.explanation && (
+                                  <div className="mt-2.5 p-2.5 bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100/60 dark:border-violet-900/40 rounded-xl flex items-start gap-1.5">
+                                    <Brain className="w-3.5 h-3.5 text-violet-500 mt-0.5 shrink-0" />
+                                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed italic">
+                                      {task.explanation}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             </div>
 
