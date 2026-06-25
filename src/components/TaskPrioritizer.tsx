@@ -352,42 +352,40 @@ export default function TaskPrioritizer({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-                  Deadline Time
-                </label>
-                <div className="relative flex items-center group">
-                  <span className="absolute left-3 text-indigo-500 dark:text-indigo-400 pointer-events-none flex items-center justify-center z-10">
-                    <Calendar className="w-3.5 h-3.5" />
-                  </span>
-                  <input
-                    id="input-due-date"
-                    ref={dateInputRef}
-                    type="datetime-local"
-                    required
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  Est. Work Minutes
-                </label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                Deadline Time
+              </label>
+              <div className="relative flex items-center group">
+                <span className="absolute left-3 text-indigo-500 dark:text-indigo-400 pointer-events-none flex items-center justify-center z-10">
+                  <Calendar className="w-3.5 h-3.5" />
+                </span>
                 <input
-                  id="input-est-time"
-                  type="number"
-                  min="5"
-                  max="480"
+                  id="input-due-date"
+                  ref={dateInputRef}
+                  type="datetime-local"
                   required
-                  value={estimatedTime}
-                  onChange={(e) => setEstimatedTime(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="w-full pl-9 pr-12 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white cursor-pointer"
                 />
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Est. Work Minutes
+              </label>
+              <input
+                id="input-est-time"
+                type="number"
+                min="1"
+                max="480"
+                required
+                value={estimatedTime}
+                onChange={(e) => setEstimatedTime(Number(e.target.value))}
+                className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white"
+              />
             </div>
 
             <div className="space-y-1.5">

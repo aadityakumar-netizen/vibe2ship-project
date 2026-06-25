@@ -215,7 +215,7 @@ export default function HabitTracker({
           </span>
           <h3 className="font-extrabold text-slate-955 dark:text-white text-xl flex items-center gap-2">
             <Trophy className="w-5 h-5 text-amber-500 animate-bounce" />
-            Lumina Habit Sanctuary
+            Lumina Habit Tracker
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl">
             Procrastination is often fueled by a lack of emotional

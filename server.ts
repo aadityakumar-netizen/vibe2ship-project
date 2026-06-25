@@ -437,38 +437,41 @@ function parseOfflineChatMessage(message: string, currentTasks: any[] = []) {
 
   const topic = extractTopic(message);
 
-  // 1. Check for Emergency Panic Shift request
-  if (normalizedMsg.includes("panic") || normalizedMsg.includes("overwhelmed") || normalizedMsg.includes("stressed") || normalizedMsg.includes("emergency") || normalizedMsg.includes("scared") || normalizedMsg.includes("anxious") || normalizedMsg.includes("anxiety")) {
-    const topicContext = topic ? ` regarding "${topic}"` : "";
-    reply = `I hear you, and I am right here with you. Take a slow, deep breath. Let's do a 3-step cognitive emergency reset${topicContext}:
+  // 1. Check for Procrastination / Motivation request
+  if (normalizedMsg.includes("procrastinat") || normalizedMsg.includes("motivation") || normalizedMsg.includes("get started") || normalizedMsg.includes("inertia") || normalizedMsg.includes("lazy")) {
+    const topicContext = topic ? ` on "${topic}"` : "";
+    reply = `Overcoming procrastination${topicContext} is less about willpower and more about managing your emotional resistance. Let's break that friction and build momentum:
     
-1. 🛑 STOP & DE-CLUTTER: Drop whatever you are doing for exactly 60 seconds. Sit upright and focus on your breathing.
-2. 📝 UNLOAD THE STACK: Write down the single most urgent priority. Ignore the rest of the list for now.
-3. ⚡ FRICTIONLESS ACTION: Spend just 5 minutes on that single item with zero expectations.
+• ⏱️ **The 2-Minute Rule**: Commit to working on your priority for just 120 seconds. Once you cross the friction of starting, momentum usually takes over.
+• 🎯 **Micro-Sizing**: Break your tasks down until the next step is so small it feels almost ridiculous (e.g., "Open the document and write just one line").
+• 🔇 **Distraction Quarantine**: Put your phone in another room and close all browser tabs unrelated to this specific action.
 
-You can handle this! Let's take action together. Would you like me to trigger an active Rescue Plan for your most urgent task?`;
+You have the power to break the inertia. What's the smallest step you can take right now?`;
     return { reply, action, taskData };
   }
 
-  // 2. Check for Email Draft/Extension Script
-  if (normalizedMsg.includes("draft") || normalizedMsg.includes("extension") || normalizedMsg.includes("email") || normalizedMsg.includes("script") || normalizedMsg.includes("write")) {
-    const focusItem = topic ? topic : "[Assignment/Project Name]";
-    reply = `Here is a highly polished, respectful template you can copy, fill in, and send to request a deadline extension for ${focusItem}:
+  // 2. Check for Exam Stress / Anxiety / Grounding
+  if (normalizedMsg.includes("stress") || normalizedMsg.includes("anxiety") || normalizedMsg.includes("calm") || normalizedMsg.includes("exam") || normalizedMsg.includes("test") || normalizedMsg.includes("panic") || normalizedMsg.includes("overwhelmed")) {
+    const topicContext = topic ? ` regarding "${topic}"` : "";
+    reply = `When stress is high and exams are looming, your brain's working memory gets crowded by anxiety. Let's run a cognitive cooling routine${topicContext}:
 
---------------------------------------------------
-Subject: Respectful Extension Request: ${focusItem} - [Your Name]
+• 🌬️ **4-7-8 Breathing**: Inhale for 4 seconds, hold for 7, and exhale completely for 8. Repeat this 3 times to trigger your body's relaxation response.
+• 📝 **The Brain Dump**: Spend 5 minutes writing down every single worry or formula swirling in your head onto a blank sheet of paper to clear mental bandwidth.
+• 🔬 **High-Yield Practice**: Focus exclusively on active recall (testing yourself with quick questions) rather than passive, stressful rereading.
 
-Dear Professor/Director [Last Name],
+Take a deep breath. You are fully capable of handling this. How can we make your preparation feel more manageable?`;
+    return { reply, action, taskData };
+  }
 
-I am writing to respectfully request a brief extension on the ${focusItem} currently due on [Original Date]. Due to some unforeseen challenges this week, I want to ensure my submission meets the high standards required and fully covers all criteria.
+  // 3. Check for Time Management / Prioritizing / Multiple Deadlines
+  if (normalizedMsg.includes("priorit") || normalizedMsg.includes("multiple") || normalizedMsg.includes("deadline") || normalizedMsg.includes("time") || normalizedMsg.includes("manage")) {
+    reply = `Facing multiple overlapping deadlines can feel paralyzing. Let's run a rapid triage strategy to organize your time:
 
-I am actively working on the tasks and have completed [what you completed so far]. I would be immensely grateful if I could submit the final deliverables by [Proposed New Date/Time].
+• 🚨 **Urgency-Importance Triage**: Isolate your tasks by their true deadlines and impact. Put out the absolute biggest fires first, and defer the rest.
+• 📦 **Time-Blocking**: Allocate distinct, non-overlapping 30-minute focus blocks for a single task. Multitasking is a myth that drains cognitive energy.
+• 🛑 **Rule of Three**: Select exactly 3 critical accomplishments for today. Ignore everything else until those are ticked off.
 
-Thank you very much for your time, understanding, and support.
-
-Sincerely,
-[Your Name]
---------------------------------------------------`;
+Let's prioritize right now. Which of your current deadlines is putting the most pressure on you?`;
     return { reply, action, taskData };
   }
 
@@ -593,14 +596,13 @@ Confirm this autonomous envelope below to add it directly to your agenda!`;
 
 To make progress immediately:
 • Type **"break down ${topic}"** to get a custom learning/execution sprint.
-• Ask me to **"write a draft"** to construct an email template or extension script.
 • Or tell me to **"add task ${topic}"** to log this directly to your core agenda!`;
   } else {
     reply = `I am listening, and I've got your back! When stress is high, our working memory shrinks, making everything feel twice as hard. Let's tackle your priorities one at a time.
 
 To get started, tell me what you're working on:
-• Ask me to **"break down math"** (or any subject) for a tailored study blueprint.
-• Tell me to **"write an email draft"** to request a deadline extension.
+• Tell me what you need help with, like **"procrastination"** or **"exam stress"**.
+• Ask me to **"break down [subject]"** for a tailored study blueprint.
 • Or tell me to **"add task [your commitment]"** to structure your schedule instantly!`;
   }
 

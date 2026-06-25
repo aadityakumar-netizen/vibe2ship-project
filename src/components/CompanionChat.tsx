@@ -157,19 +157,16 @@ export default function CompanionChat({
   // Direct fast starter pill triggers
   const promptPills = [
     {
-      label: "🔥 Emergency Panic Shift",
-      prompt:
-        "I am feeling highly overwhelmed and panicked about an approaching deadline. Take me through an cognitive emergency panic reset loop right now.",
+      label: "⏱️ Beat Procrastination",
+      prompt: "How do I overcome procrastination and get started on a difficult assignment when I have zero motivation?",
     },
     {
-      label: "✉️ Draft Extension Script",
-      prompt:
-        "I am in a high-stress pinch. Draft a highly professional, polite, and respectful deadline extension email template I can copy and send to my professor/client right now.",
+      label: "🧠 Manage Exam Stress",
+      prompt: "What are some practical techniques to calm my mind and handle extreme stress or anxiety before an exam?",
     },
     {
-      label: "🧩 Break Down Math/Quiz Prep",
-      prompt:
-        "Draft a high-speed micro-targeted study blueprint for a technical assignment/quiz tomorrow. Break down the hours needed.",
+      label: "📅 Multi-deadline Strategy",
+      prompt: "How can I effectively prioritize and manage my time when I have multiple urgent deadlines in the same week?",
     },
   ];
 

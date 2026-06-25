@@ -21,14 +21,22 @@ interface VoiceAssistantProps {
   tasks: Task[];
   onTasksChange: (tasks: Task[]) => void;
   className?: string;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
 }
 
 export default function VoiceAssistant({
   tasks,
   onTasksChange,
-  className = ""
+  className = "",
+  isOpen: controlledIsOpen,
+  setIsOpen: controlledSetIsOpen
 }: VoiceAssistantProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [localIsOpen, setLocalIsOpen] = useState(false);
+  const isControlled = controlledIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : localIsOpen;
+  const setIsOpen = isControlled && controlledSetIsOpen ? controlledSetIsOpen : setLocalIsOpen;
+
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [speechSynthSupported, setSpeechSynthSupported] = useState(false);
@@ -52,8 +60,9 @@ export default function VoiceAssistant({
         setSpeechSupported(true);
         const rec = new SpeechRecognition();
         rec.continuous = false;
-        rec.interimResults = false;
+        rec.interimResults = true;
         rec.lang = "en-US";
+        rec.maxAlternatives = 1;
 
         rec.onstart = () => {
           setIsListening(true);
@@ -63,10 +72,22 @@ export default function VoiceAssistant({
         };
 
         rec.onresult = (event: any) => {
-          const resultText = event.results[0][0].transcript;
-          if (resultText) {
-            setTranscript(resultText);
-            handleVoiceCommand(resultText);
+          let interimTranscript = "";
+          let finalTranscript = "";
+
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            } else {
+              interimTranscript += event.results[i][0].transcript;
+            }
+          }
+
+          if (finalTranscript) {
+            setTranscript(finalTranscript);
+            handleVoiceCommand(finalTranscript);
+          } else if (interimTranscript) {
+            setTranscript(interimTranscript);
           }
         };
 
@@ -76,6 +97,9 @@ export default function VoiceAssistant({
           if (event.error === "not-allowed") {
             setErrorMessage("Microphone permission blocked. Please check your browser settings.");
             setStatusMessage("Microphone access is blocked.");
+          } else if (event.error === "no-speech") {
+            setErrorMessage("No speech detected. Speak clearly and close to your mic.");
+            setStatusMessage("Click to try again.");
           } else {
             setErrorMessage(`Recognition failed: ${event.error}`);
             setStatusMessage("Error occurred. Please try again.");
@@ -181,94 +205,90 @@ export default function VoiceAssistant({
   // Master NLP voice command handler
   const handleVoiceCommand = (commandText: string) => {
     const textLower = commandText.toLowerCase().trim();
+    if (!textLower) return;
 
-    // Check if the command is to add/create a task
-    const addIndicators = ["add", "create", "new", "todo", "task", "due", "assignment", "schedule", "save"];
-    const isAddingTask = addIndicators.some(kw => textLower.includes(kw));
+    // Clean prefix fillers if present (increases conversational NLP efficiency)
+    const prefixRegex = /^(please\s+)?(add|create|make|schedule|insert|todo|new|remind\s+me\s+to|remind\s+me|write\s+down|write|log|put|record|track)\s+/i;
+    let titleDraft = commandText.replace(prefixRegex, "");
 
-    if (isAddingTask) {
-      // Clean prefix fillers
-      const prefixRegex = /^(please\s+)?(add|create|make|schedule|insert|todo|new)\s+/i;
-      let titleDraft = commandText.replace(prefixRegex, "");
+    // Get due date
+    const { isoString: dueDate, label: dayLabel } = extractDueDate(textLower);
 
-      // Get due date
-      const { isoString: dueDate, label: dayLabel } = extractDueDate(textLower);
+    // Strip relative date markers from the title
+    const dateMarkers = [
+      /due\s+on\s+\w+/i,
+      /due\s+\w+/i,
+      /by\s+\w+/i,
+      /on\s+\w+/i,
+      /due\s+tomorrow/i,
+      /tomorrow/i,
+      /due\s+today/i,
+      /today/i,
+      /tonight/i
+    ];
 
-      // Strip relative date markers from the title
-      const dateMarkers = [
-        /due\s+on\s+\w+/i,
-        /due\s+\w+/i,
-        /by\s+\w+/i,
-        /on\s+\w+/i,
-        /due\s+tomorrow/i,
-        /tomorrow/i,
-        /due\s+today/i,
-        /today/i,
-        /tonight/i
-      ];
-
-      for (const marker of dateMarkers) {
-        titleDraft = titleDraft.replace(marker, "");
-      }
-
-      // Clean punctuation
-      titleDraft = titleDraft.replace(/[,.!?;:]/g, "").replace(/\s+/g, " ").trim();
-
-      // Format title casing
-      const finalTitle = titleDraft
-        ? titleDraft
-            .split(" ")
-            .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-            .join(" ")
-        : "New Assignment Task";
-
-      // Detect category
-      let category: Task["category"] = "assignment";
-      if (textLower.includes("bill") || textLower.includes("pay") || textLower.includes("rent") || textLower.includes("fees")) {
-        category = "bill";
-      } else if (textLower.includes("meeting") || textLower.includes("call") || textLower.includes("talk") || textLower.includes("zoom")) {
-        category = "meeting";
-      } else if (textLower.includes("interview") || textLower.includes("pitch") || textLower.includes("recruit")) {
-        category = "interview";
-      }
-
-      // Detect importance level
-      const importance: Task["importance"] = (textLower.includes("urgent") || textLower.includes("high") || textLower.includes("critical") || textLower.includes("asap")) ? "high" : "normal";
-
-      // Detect duration
-      let estimatedTime = 45;
-      const timeMatch = textLower.match(/(\d+)\s*(min|hour|hr)/);
-      if (timeMatch) {
-        const value = parseInt(timeMatch[1], 10);
-        const unit = timeMatch[2];
-        estimatedTime = (unit.startsWith("hour") || unit.startsWith("hr")) ? value * 60 : value;
-      }
-
-      // Create new task object
-      const createdTask: Task = {
-        id: "voice-created-" + Date.now().toString(36),
-        title: finalTitle,
-        dueDate,
-        importance,
-        estimatedTime,
-        notes: `Automatically created by Lumina Voice Assistant from vocal command: "${commandText}"`,
-        completed: false,
-        category
-      };
-
-      // Add task to array
-      const newTasks = [...tasks, createdTask];
-      onTasksChange(newTasks);
-      setLastCreatedTask(createdTask);
-      setStatusMessage("Commitment successfully created!");
-
-      // Play vocal confirmation
-      speakText(`Successfully added ${finalTitle} due on ${dayLabel} to your schedule.`);
-    } else {
-      // General feedback when it doesn't match a task creation command
-      setStatusMessage("I recognized that, but couldn't parse it as a task. Try saying: 'Add DSA assignment due Friday'");
-      speakText("I couldn't parse that command. Try saying: Add DSA assignment due Friday.");
+    for (const marker of dateMarkers) {
+      titleDraft = titleDraft.replace(marker, "");
     }
+
+    // Clean punctuation
+    titleDraft = titleDraft.replace(/[,.!?;:]/g, "").replace(/\s+/g, " ").trim();
+
+    // If title becomes empty, fallback to the original commandText
+    if (!titleDraft.trim()) {
+      titleDraft = commandText.trim();
+    }
+
+    // Format title casing nicely
+    const finalTitle = titleDraft
+      ? titleDraft
+          .split(" ")
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(" ")
+      : "New Assignment Task";
+
+    // Detect category
+    let category: Task["category"] = "assignment";
+    if (textLower.includes("bill") || textLower.includes("pay") || textLower.includes("rent") || textLower.includes("fees")) {
+      category = "bill";
+    } else if (textLower.includes("meeting") || textLower.includes("call") || textLower.includes("talk") || textLower.includes("zoom")) {
+      category = "meeting";
+    } else if (textLower.includes("interview") || textLower.includes("pitch") || textLower.includes("recruit")) {
+      category = "interview";
+    }
+
+    // Detect importance level
+    const importance: Task["importance"] = (textLower.includes("urgent") || textLower.includes("high") || textLower.includes("critical") || textLower.includes("asap")) ? "high" : "normal";
+
+    // Detect duration
+    let estimatedTime = 45;
+    const timeMatch = textLower.match(/(\d+)\s*(min|hour|hr)/);
+    if (timeMatch) {
+      const value = parseInt(timeMatch[1], 10);
+      const unit = timeMatch[2];
+      estimatedTime = (unit.startsWith("hour") || unit.startsWith("hr")) ? value * 60 : value;
+    }
+
+    // Create new task object
+    const createdTask: Task = {
+      id: "voice-created-" + Date.now().toString(36),
+      title: finalTitle,
+      dueDate,
+      importance,
+      estimatedTime,
+      notes: `Automatically created by Lumina Voice Assistant from vocal command: "${commandText}"`,
+      completed: false,
+      category
+    };
+
+    // Add task to array
+    const newTasks = [...tasks, createdTask];
+    onTasksChange(newTasks);
+    setLastCreatedTask(createdTask);
+    setStatusMessage("Commitment successfully created!");
+
+    // Play vocal confirmation
+    speakText(`Successfully added ${finalTitle} due on ${dayLabel} to your schedule.`);
   };
 
   const handleMicToggle = (e: React.MouseEvent) => {
@@ -305,33 +325,38 @@ export default function VoiceAssistant({
   };
 
   return (
-    <div className={`fixed bottom-24 right-6 z-40 ${className}`}>
+    <div className={isControlled ? "" : `fixed bottom-24 right-6 z-40 ${className}`}>
       {/* Floating Toggle Button */}
-      <button
-        onClick={() => {
-          setIsOpen(!isOpen);
-          setErrorMessage("");
-        }}
-        id="btn-voice-assistant-toggle"
-        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 relative border cursor-pointer hover:scale-105 active:scale-95 ${
-          isOpen
-            ? "bg-slate-900 border-slate-700 text-indigo-400"
-            : "bg-gradient-to-tr from-indigo-650 to-violet-650 border-indigo-500 text-white hover:shadow-indigo-500/20"
-        }`}
-        title="Lumina Voice Assistant"
-      >
-        <span className="absolute inset-0 rounded-full bg-indigo-500/10 animate-ping opacity-40"></span>
-        <Mic className="w-5 h-5 relative z-10 shrink-0" />
-        {isListening && (
-          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-550 border-2 border-slate-950 rounded-full animate-pulse"></span>
-        )}
-      </button>
+      {!isControlled && (
+        <button
+          onClick={() => {
+            setIsOpen(!isOpen);
+            setErrorMessage("");
+          }}
+          id="btn-voice-assistant-toggle"
+          className={`w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 relative border cursor-pointer hover:scale-105 active:scale-95 ${
+            isOpen
+              ? "bg-slate-900 border-slate-700 text-indigo-400"
+              : "bg-gradient-to-tr from-indigo-650 to-violet-650 border-indigo-500 text-white hover:shadow-indigo-500/20"
+          }`}
+          title="Lumina Voice Assistant"
+        >
+          <span className="absolute inset-0 rounded-full bg-indigo-500/10 animate-ping opacity-40"></span>
+          <Mic className="w-5 h-5 relative z-10 shrink-0" />
+          {isListening && (
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-550 border-2 border-slate-950 rounded-full animate-pulse"></span>
+          )}
+        </button>
+      )}
 
       {/* Expandable Assistant Card */}
       {isOpen && (
         <div
           id="panel-voice-assistant"
-          className="absolute bottom-16 right-0 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl space-y-4 text-left animate-fade-in"
+          className={isControlled 
+            ? "fixed bottom-6 right-6 md:bottom-8 md:right-8 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl space-y-4 text-left animate-fade-in z-50"
+            : "absolute bottom-16 right-0 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl space-y-4 text-left animate-fade-in z-50"
+          }
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-850 pb-3">
@@ -350,18 +375,6 @@ export default function VoiceAssistant({
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Voice Mute Toggle */}
-              <button
-                onClick={toggleMute}
-                className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg transition"
-                title={isMuted ? "Unmute Voice Responses" : "Mute Voice Responses"}
-              >
-                {isMuted ? (
-                  <VolumeX className="w-4 h-4 text-rose-400" />
-                ) : (
-                  <Volume2 className="w-4 h-4 text-emerald-400" />
-                )}
-              </button>
               {/* Close Panel Button */}
               <button
                 onClick={() => setIsOpen(false)}
@@ -454,34 +467,13 @@ export default function VoiceAssistant({
           )}
 
           {/* Suggestions Pill list */}
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1.5 text-left text-slate-450">
             <span className="text-[9.5px] font-black text-slate-500 uppercase tracking-widest block flex items-center gap-1">
               <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
-              Supported Commands
+              General Voice Engine
             </span>
-            <div className="space-y-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setTranscript("Add DSA assignment due Friday");
-                  handleVoiceCommand("Add DSA assignment due Friday");
-                }}
-                className="w-full text-left p-2 bg-slate-950 hover:bg-slate-850 border border-slate-850 hover:border-slate-800 text-[10.5px] text-slate-300 hover:text-white rounded-lg transition-all flex items-center justify-between cursor-pointer"
-              >
-                <span>"Add DSA assignment due Friday"</span>
-                <Play className="w-2.5 h-2.5 fill-slate-500 shrink-0" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setTranscript("Add math homework due Tuesday with 90 min estimate");
-                  handleVoiceCommand("Add math homework due Tuesday with 90 min estimate");
-                }}
-                className="w-full text-left p-2 bg-slate-950 hover:bg-slate-850 border border-slate-850 hover:border-slate-800 text-[10.5px] text-slate-300 hover:text-white rounded-lg transition-all flex items-center justify-between cursor-pointer"
-              >
-                <span>"Add math homework due Tuesday..."</span>
-                <Play className="w-2.5 h-2.5 fill-slate-500 shrink-0" />
-              </button>
+            <div className="bg-slate-950 p-3 border border-slate-850 rounded-xl text-[11px] text-slate-400 italic leading-relaxed">
+              "Lumina now understands <strong>any</strong> spoken instruction! Simply speak your task (e.g. <em>'Prepare for DSA test tomorrow'</em> or <em>'Finish reading assignment'</em>), and it will be captured instantly."
             </div>
           </div>
 

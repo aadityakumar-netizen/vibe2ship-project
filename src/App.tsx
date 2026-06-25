@@ -9,6 +9,7 @@ import CompanionChat from "./components/CompanionChat";
 import HabitTracker from "./components/HabitTracker";
 import AuthScreen from "./components/AuthScreen";
 import VoiceAssistant from "./components/VoiceAssistant";
+import DashboardOverview from "./components/DashboardOverview";
 import { 
   Zap, 
   Hourglass, 
@@ -28,9 +29,56 @@ import {
   Moon,
   LogOut,
   User as UserIcon,
-  ShieldAlert
+  ShieldAlert,
+  LayoutDashboard,
+  ChevronDown,
+  Menu,
+  Home,
+  Mic
 } from "lucide-react";
 
+const featureTabs = [
+  {
+    id: "priorities",
+    name: "Agenda & Priorities",
+    desc: "Map imminent threats, prioritize commitments, and review decision matrix.",
+    icon: Compass,
+    colorClass: "text-indigo-400 bg-indigo-950/40 border-indigo-900/30",
+    hoverBorder: "hover:border-indigo-500/30 hover:bg-indigo-950/20 text-indigo-500"
+  },
+  {
+    id: "study-planner",
+    name: "AI Study Planner",
+    desc: "Algorithmic study block creation, break structures, and active learning guides.",
+    icon: BrainCircuit,
+    colorClass: "text-emerald-400 bg-emerald-950/40 border-emerald-900/30",
+    hoverBorder: "hover:border-emerald-500/30 hover:bg-emerald-950/20 text-emerald-500"
+  },
+  {
+    id: "habits",
+    name: "Habit Tracker",
+    desc: "Reinforce daily routines, track streaks, and master neural habits.",
+    icon: Sparkles,
+    colorClass: "text-amber-400 bg-amber-950/40 border-amber-900/30",
+    hoverBorder: "hover:border-amber-500/30 hover:bg-amber-950/20 text-amber-500"
+  },
+  {
+    id: "coach",
+    name: "Lumina Coach",
+    desc: "Converse with your cognitive AI strategy counselor and clear panic spikes.",
+    icon: Bot,
+    colorClass: "text-violet-400 bg-violet-950/40 border-violet-900/30",
+    hoverBorder: "hover:border-violet-500/30 hover:bg-violet-950/20 text-violet-500"
+  },
+  {
+    id: "scheduler",
+    name: "Time-Blocking Calendar",
+    desc: "Orchestrate your hours, protect deep rest, and audit daily execution.",
+    icon: Timer,
+    colorClass: "text-rose-400 bg-rose-950/40 border-rose-900/30",
+    hoverBorder: "hover:border-rose-500/30 hover:bg-rose-950/20 text-rose-500"
+  }
+];
 
 export default function App() {
   // Current user accounts states
@@ -47,7 +95,10 @@ export default function App() {
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   
   // App navigation state
-  const [activeNavTab, setActiveNavTab] = useState<"priorities" | "scheduler" | "habits" | "coach" | "study-planner">("priorities");
+  const [activeNavTab, setActiveNavTab] = useState<"home" | "priorities" | "scheduler" | "habits" | "coach" | "study-planner">("home");
+  const [showFeatureMenu, setShowFeatureMenu] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
   
   // Loading and helper state
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -406,10 +457,26 @@ export default function App() {
     }`}>
       
       {/* Upper Navigation & Title Container with Professional Polish */}
-      <header className="h-16 border-b px-6 flex items-center justify-between shrink-0 sticky top-0 z-40 shadow-xs bg-slate-950 border-slate-900 text-slate-100 transition-colors duration-300">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-9 h-9 bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 rounded-xl text-white shadow-md shadow-indigo-500/25 ring-2 ring-indigo-500/10 shrink-0">
+      <header className="h-16 border-b px-4 flex items-center justify-between shrink-0 sticky top-0 z-40 shadow-xs bg-slate-950 border-slate-900 text-slate-100 transition-colors duration-300">
+        <div className="flex items-center gap-2">
+          {/* Hamburger menu button */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2.5 rounded-xl hover:bg-slate-900 text-slate-400 hover:text-white transition cursor-pointer shrink-0"
+            aria-label="Toggle Navigation Sidebar"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          {/* YouTube-style Clickable Logo & Title */}
+          <button
+            onClick={() => {
+              setActiveNavTab("home");
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center gap-3 text-left focus:outline-none hover:opacity-90 transition group cursor-pointer"
+          >
+            <div className="relative flex items-center justify-center w-9 h-9 bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 rounded-xl text-white shadow-md shadow-indigo-500/25 ring-2 ring-indigo-500/10 shrink-0 group-hover:scale-[1.03] transition-transform">
               <ShieldAlert className="w-5 h-5 text-indigo-100 opacity-40 absolute" />
               <span className="font-black text-sm tracking-tight font-display text-white relative z-10">S</span>
             </div>
@@ -421,9 +488,9 @@ export default function App() {
                 Crisis AI Strategy
               </span>
             </div>
-          </div>
-          <div className="h-4 w-px bg-slate-800 hidden md:block"></div>
-          <span className="text-slate-400 font-semibold text-xs hidden md:inline-block">
+          </button>
+          <div className="h-4 w-px bg-slate-800 hidden lg:block ml-2"></div>
+          <span className="text-slate-400 font-semibold text-xs hidden lg:inline-block ml-1">
             {new Date().toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}
           </span>
         </div>
@@ -444,18 +511,17 @@ export default function App() {
 
           <button
             onClick={() => {
-              setActiveNavTab("priorities");
-              // Focus input title if it exists
-              setTimeout(() => {
-                const element = document.getElementById("input-task-title");
-                if (element) element.focus();
-              }, 100);
+              setShowVoiceAssistant(!showVoiceAssistant);
             }}
-            className="px-3.5 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition shadow-xs flex items-center gap-1 shrink-0"
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition shadow-xs flex items-center gap-1.5 shrink-0 ${
+              showVoiceAssistant
+                ? "bg-slate-800 text-indigo-400 border border-slate-700"
+                : "bg-gradient-to-r from-indigo-600 to-violet-650 text-white hover:from-indigo-500 hover:to-violet-550"
+            }`}
+            title="Lumina Voice Assistant"
           >
-            <Zap className="w-3.5 h-3.5 fill-white shrink-0" />
-            <span className="hidden xs:inline">+ Emergency Task</span>
-            <span className="xs:hidden">+ Add</span>
+            <Mic className={`w-3.5 h-3.5 shrink-0 ${showVoiceAssistant ? "text-indigo-400 font-bold" : "fill-white text-white"}`} />
+            <span>Lumina Voice Assistant</span>
           </button>
 
           {/* Proactive Smart Alerts Icon */}
@@ -505,81 +571,120 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Core App Workspace Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
-        
-        {/* Navigation Tabs bar */}
-        <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 w-full max-w-5xl shadow-2xs overflow-x-auto">
-          <button
-            id="nav-btn-priorities"
-            onClick={() => setActiveNavTab("priorities")}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeNavTab === "priorities"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-450 hover:bg-white dark:hover:bg-slate-800"
-            }`}
-          >
-            <Compass className={`w-4 h-4 ${activeNavTab === "priorities" ? "text-white" : "text-indigo-500"}`} />
-            Agenda & Priorities
-          </button>
-          
-          <button
-            id="nav-btn-study-planner"
-            onClick={() => setActiveNavTab("study-planner")}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeNavTab === "study-planner"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-emerald-650 dark:hover:text-emerald-500 hover:bg-white dark:hover:bg-slate-800"
-            }`}
-          >
-            <BrainCircuit className={`w-4 h-4 ${activeNavTab === "study-planner" ? "text-white" : "text-emerald-500"}`} />
-            AI Study Planner
-          </button>
- 
-          <button
-            id="nav-btn-habits"
-            onClick={() => setActiveNavTab("habits")}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeNavTab === "habits"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-450 hover:bg-white dark:hover:bg-slate-800"
-            }`}
-          >
-            <Sparkles className={`w-4 h-4 ${activeNavTab === "habits" ? "text-white" : "text-amber-500"}`} />
-            Habit Sanctuary
-          </button>
- 
-          <button
-            id="nav-btn-coach"
-            onClick={() => {
-              setActiveNavTab("coach");
-            }}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeNavTab === "coach"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-450 hover:bg-white dark:hover:bg-slate-800"
-            }`}
-          >
-            <Bot className={`w-4 h-4 ${activeNavTab === "coach" ? "text-white" : "text-violet-500"}`} />
-            Lumina Coach
-          </button>
+      {/* YouTube-style Dual Layout Wrapper */}
+      <div className="flex flex-1 relative overflow-hidden">
+        {/* Backdrop overlay for mobile drawer */}
+        {sidebarOpen && (
+          <button 
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/60 z-30 transition-opacity backdrop-blur-xs cursor-pointer w-full h-full text-left"
+            aria-label="Close Sidebar backdrop"
+          />
+        )}
 
-          <button
-            id="nav-btn-scheduler"
-            onClick={() => setActiveNavTab("scheduler")}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeNavTab === "scheduler"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-450 hover:bg-white dark:hover:bg-slate-800"
-            }`}
-          >
-            <Timer className={`w-4 h-4 ${activeNavTab === "scheduler" ? "text-white" : "text-rose-500"}`} />
-            Time-Blocking Calendar
-          </button>
-        </div>
+        {/* Left Navigation Sidebar */}
+        <aside className={`
+          fixed md:static inset-y-0 left-0 z-30 
+          ${sidebarOpen ? "translate-x-0 w-64 border-r border-slate-900" : "-translate-x-full md:-translate-x-full w-0 overflow-hidden border-r-0"} 
+          transition-all duration-300 ease-in-out
+          flex flex-col shrink-0 bg-slate-950 text-slate-100 h-[calc(100vh-4rem)] overflow-y-auto
+        `}>
+          <div className="p-3 space-y-1.5">
+            {/* YouTube style Home Button */}
+            <button
+              onClick={() => {
+                setActiveNavTab("home");
+                if (window.innerWidth < 768) setSidebarOpen(false);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`w-full flex ${sidebarOpen ? "flex-row gap-3.5 px-3.5 py-3 text-left" : "flex-col gap-1 items-center justify-center py-3 px-1 text-center"} text-xs font-bold rounded-xl transition duration-150 cursor-pointer ${
+                activeNavTab === "home"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/10"
+                  : "text-slate-300 hover:text-white hover:bg-slate-900/80"
+              }`}
+            >
+              <Home className={`w-5 h-5 ${activeNavTab === "home" ? "text-white" : "text-indigo-400"}`} />
+              <span className={sidebarOpen ? "font-bold" : "text-[10px] text-slate-400 font-medium truncate w-full"}>
+                Home
+              </span>
+            </button>
+
+            <div className="h-px bg-slate-900 my-2" />
+
+            {sidebarOpen && (
+              <div className="px-3 py-1 text-[9px] font-black uppercase text-indigo-400/85 tracking-widest">
+                Strategic Suite
+              </div>
+            )}
+
+            {featureTabs.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeNavTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveNavTab(item.id as any);
+                    if (window.innerWidth < 768) setSidebarOpen(false);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className={`w-full flex ${sidebarOpen ? "flex-row gap-3.5 px-3.5 py-3 text-left" : "flex-col gap-1 items-center justify-center py-3 px-1 text-center"} text-xs font-bold rounded-xl transition duration-150 cursor-pointer ${
+                    isActive
+                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-550/10"
+                      : "text-slate-300 hover:text-white hover:bg-slate-900/80"
+                  }`}
+                  title={item.name}
+                >
+                  <Icon className={`w-5 h-5 ${isActive ? "text-white" : "text-indigo-400"}`} />
+                  <span className={sidebarOpen ? "font-bold truncate" : "text-[10px] text-slate-400 font-medium truncate w-full"}>
+                    {sidebarOpen ? item.name : item.name.split(" ")[0]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Collapsible operational footer inside sidebar */}
+          {sidebarOpen && (
+            <div className="mt-auto p-4 border-t border-slate-900 bg-slate-950/40 space-y-2.5 hidden md:block">
+              <div className="space-y-1">
+                <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-widest block">Stress Mitigation Load</span>
+                <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-indigo-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${Math.min(100, pendingCount * 25)}%` }}></div>
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-500 leading-normal">
+                Nerve center online and safeguarding.
+              </p>
+            </div>
+          )}
+        </aside>
+
+        {/* Content Panel Area */}
+        <div className="flex-1 overflow-y-auto min-w-0">
+          <main className="max-w-7xl w-full mx-auto p-6 space-y-6">
 
         {/* Dynamic Display components rendering */}
         <div className="transition-all duration-300">
+          {activeNavTab === "home" && (
+            <DashboardOverview
+              tasks={tasks}
+              habits={habits}
+              reminders={reminders}
+              timeBlocks={timeBlocks}
+              currentUser={currentUser}
+              setActiveNavTab={setActiveNavTab}
+              onAddTask={(newTaskDetails) => {
+                const newTask: Task = {
+                  ...newTaskDetails,
+                  id: "raw_" + Math.random().toString(36).substring(2, 9),
+                  completed: false
+                };
+                handleTasksChange([...tasks, newTask]);
+              }}
+            />
+          )}
+
           {activeNavTab === "priorities" &&
             (activeRescue ? (
               <RescueGuide
@@ -645,7 +750,11 @@ export default function App() {
           )}
         </div>
 
-      </main>
+
+
+          </main>
+        </div>
+      </div>
 
       {/* Proactive Smart Alerts Side-over drawer overlay */}
       {showNotificationCenter && (
@@ -778,7 +887,12 @@ export default function App() {
         </div>
       </footer>
 
-      <VoiceAssistant tasks={tasks} onTasksChange={handleTasksChange} />
+      <VoiceAssistant 
+        tasks={tasks} 
+        onTasksChange={handleTasksChange} 
+        isOpen={showVoiceAssistant} 
+        setIsOpen={setShowVoiceAssistant} 
+      />
 
     </div>
   );
