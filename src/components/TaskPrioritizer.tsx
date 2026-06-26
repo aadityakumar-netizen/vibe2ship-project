@@ -15,7 +15,6 @@ import {
   Brain,
   Zap,
   CheckCircle2,
-  Calendar,
 } from "lucide-react";
 
 interface TaskPrioritizerProps {
@@ -357,9 +356,6 @@ export default function TaskPrioritizer({
                 Deadline Time
               </label>
               <div className="relative flex items-center group">
-                <span className="absolute left-3 text-indigo-500 dark:text-indigo-400 pointer-events-none flex items-center justify-center z-10">
-                  <Calendar className="w-3.5 h-3.5" />
-                </span>
                 <input
                   id="input-due-date"
                   ref={dateInputRef}
@@ -367,7 +363,7 @@ export default function TaskPrioritizer({
                   required
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full pl-9 pr-12 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white cursor-pointer"
+                  className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium bg-white dark:bg-slate-800 border-slate-350 dark:border-slate-700 text-slate-900 dark:text-white cursor-pointer"
                 />
               </div>
             </div>

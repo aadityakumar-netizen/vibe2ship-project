@@ -5,43 +5,44 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
 
-  /* Redesign color palette for dark theme as requested */
-  --color-slate-950: #111827; /* Navbar / Sidebar / Secondary Background */
-  --color-slate-925: #0F172A; /* Primary Background */
-  --color-slate-900: #1E293B; /* Card Background */
-  --color-slate-850: #273549; /* Card Hover */
-  --color-slate-800: #1E293B; /* Input Background */
-  --color-slate-700: #334155; /* Borders */
-  --color-slate-600: #475569; /* Input Border */
-  --color-slate-400: #94A3B8; /* Muted Text */
-  --color-slate-300: #CBD5E1; /* Secondary Text */
-  --color-slate-200: #CBD5E1; /* Secondary Text */
+  /* Premium enterprise dark theme color palette as requested */
+  --color-slate-950: #121B2B; /* Secondary Background */
+  --color-slate-925: #0B1220; /* Primary Background */
+  --color-slate-900: #18253B; /* Card Background */
+  --color-slate-850: #22324D; /* Card Hover / Elevated Card */
+  --color-slate-800: #18253B; /* Input Background */
+  --color-slate-700: rgba(255, 255, 255, 0.08); /* Translucent Borders */
+  --color-slate-600: rgba(255, 255, 255, 0.12); /* Input borders */
+  --color-slate-500: #64748B; /* Muted Text */
+  --color-slate-400: #64748B; /* Muted Text */
+  --color-slate-300: #94A3B8; /* Secondary Text */
+  --color-slate-200: #94A3B8; /* Secondary Text */
   --color-slate-100: #F8FAFC; /* Primary Text */
   --color-slate-50: #F8FAFC;  /* Primary Text */
 
-  /* Primary Accent: #3B82F6 */
-  /* Button Hover: #2563EB */
-  --color-indigo-400: #3B82F6;
-  --color-indigo-500: #3B82F6;
-  --color-indigo-600: #3B82F6;
-  --color-indigo-700: #2563EB;
-  --color-indigo-800: #2563EB;
+  /* Primary Accent: #4F8CFF */
+  /* Primary Hover: #6EA8FF */
+  --color-indigo-400: #4F8CFF;
+  --color-indigo-500: #4F8CFF;
+  --color-indigo-600: #4F8CFF;
+  --color-indigo-700: #6EA8FF;
+  --color-indigo-800: #6EA8FF;
 
-  /* Secondary Accent: #06B6D4 */
-  --color-violet-400: #06B6D4;
-  --color-violet-500: #06B6D4;
-  --color-violet-550: #06B6D4;
-  --color-violet-600: #06B6D4;
-  --color-violet-650: #06B6D4;
-  --color-violet-700: #06B6D4;
+  /* Secondary Accent (Violet) mapped to Blue for absolute palette simplicity */
+  --color-violet-400: #4F8CFF;
+  --color-violet-500: #4F8CFF;
+  --color-violet-550: #4F8CFF;
+  --color-violet-600: #4F8CFF;
+  --color-violet-650: #4F8CFF;
+  --color-violet-700: #4F8CFF;
 
-  /* Success: #10B981 */
-  --color-emerald-400: #10B981;
-  --color-emerald-500: #10B981;
-  --color-emerald-600: #10B981;
-  --color-green-400: #10B981;
-  --color-green-500: #10B981;
-  --color-green-600: #10B981;
+  /* Success: #22C55E */
+  --color-emerald-400: #22C55E;
+  --color-emerald-500: #22C55E;
+  --color-emerald-600: #22C55E;
+  --color-green-400: #22C55E;
+  --color-green-500: #22C55E;
+  --color-green-600: #22C55E;
 
   /* Warning: #F59E0B */
   --color-amber-400: #F59E0B;
@@ -60,23 +61,90 @@
   --color-red-500: #EF4444;
   --color-red-600: #EF4444;
 
-  /* Link Hover: #60A5FA */
-  --color-indigo-300: #60A5FA;
-  --color-blue-400: #60A5FA;
-  --color-blue-500: #3B82F6;
-  --color-blue-600: #2563EB;
+  /* Link Hover: #6EA8FF */
+  --color-indigo-300: #6EA8FF;
+  --color-blue-400: #6EA8FF;
+  --color-blue-500: #4F8CFF;
+  --color-blue-600: #3B82F6;
 }
 
-/* Global Dark Theme Forms and Selections overrides for pristine, high-contrast inputs */
+/* Global Dark Theme Overrides for high-end SaaS matte components and forms */
 .dark input, .dark select, .dark textarea {
-  background-color: #1E293B !important;
-  border-color: #475569 !important;
+  background-color: #121B2B !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: #F8FAFC !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  transition: all 200ms ease-in-out !important;
+}
+
+.dark input::placeholder, .dark textarea::placeholder {
+  color: #64748B !important;
 }
 
 .dark input:focus, .dark select:focus, .dark textarea:focus {
-  border-color: #3B82F6 !important;
-  --tw-ring-color: rgba(59, 130, 246, 0.3) !important;
+  border-color: #4F8CFF !important;
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.15) !important;
+  outline: none !important;
+}
+
+/* Elegant matte finish cards, translucent borders & layered shadows styling in dark mode */
+.dark .dark\:bg-slate-900,
+.dark .bg-slate-900,
+.dark .bg-slate-900\/40,
+.dark .bg-slate-950\/60 {
+  background-color: #18253B !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 10px 30px rgba(0,0,0,.20), inset 0 0 0 1px rgba(255,255,255,.05) !important;
+  backdrop-filter: none !important;
+}
+
+/* Header subtle backdrop blur & darker background */
+.dark header {
+  background-color: rgba(11, 18, 32, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Premium blue gradient CTAs with hover glow and lift animations */
+.dark .bg-indigo-600 {
+  background: linear-gradient(135deg, #4F8CFF 0%, #3B82F6 100%) !important;
+  box-shadow: 0 4px 12px rgba(79, 140, 255, 0.15), 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: none !important;
+}
+
+.dark .bg-indigo-600:hover {
+  background: linear-gradient(135deg, #6EA8FF 0%, #4F8CFF 100%) !important;
+  box-shadow: 0 6px 20px rgba(79, 140, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-1.5px);
+}
+
+.dark .bg-indigo-600:active {
+  transform: translateY(0px);
+}
+
+/* Neutral borders and hover cards background mapping */
+.dark .border-slate-900,
+.dark .border-slate-850,
+.dark .border-slate-800,
+.dark .border-slate-750,
+.dark .border-slate-700 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .hover\:border-indigo-500\/40:hover {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: #22324D !important;
+}
+
+.dark .hover\:bg-slate-850:hover,
+.dark .hover\:bg-slate-950\/90:hover,
+.dark .hover\:bg-slate-900\/80:hover {
+  background-color: #22324D !important;
+  transition: all 150ms ease-in-out !important;
 }
 
 /* Custom scrollbars that adapt elegantly to light and dark theme modes */

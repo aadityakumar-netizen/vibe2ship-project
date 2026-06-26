@@ -498,14 +498,14 @@ export default function App() {
         {/* Quick Metrics & Actions Bar */}
         <div className="flex items-center gap-4">
           <div className="hidden lg:flex items-center gap-3">
-            <div className="flex items-center gap-1.5 border border-slate-800 bg-slate-900/60 px-2.5 py-1 rounded-lg text-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-              <span className="text-slate-300 font-medium">{pendingCount} active duties</span>
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
+              <span className="text-slate-400 font-medium"><span className="text-slate-100 font-semibold">{pendingCount}</span> active duties</span>
             </div>
 
-            <div className="flex items-center gap-1.5 border border-slate-800 bg-slate-900/60 px-2.5 py-1 rounded-lg text-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-ping"></span>
-              <span className="text-slate-300 font-medium">{Math.round(currentFrustrationFactor)}% Stress Index</span>
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse shrink-0"></span>
+              <span className="text-slate-400 font-medium"><span className="text-slate-100 font-semibold">{Math.round(currentFrustrationFactor)}%</span> Stress Index</span>
             </div>
           </div>
 
@@ -603,7 +603,7 @@ export default function App() {
                   : "text-slate-300 hover:text-white hover:bg-slate-900/80"
               }`}
             >
-              <Home className={`w-5 h-5 ${activeNavTab === "home" ? "text-white" : "text-indigo-400"}`} />
+              <Home className={`w-5 h-5 ${activeNavTab === "home" ? "text-white" : "text-slate-500"}`} />
               <span className={sidebarOpen ? "font-bold" : "text-[10px] text-slate-400 font-medium truncate w-full"}>
                 Home
               </span>
@@ -635,7 +635,7 @@ export default function App() {
                   }`}
                   title={item.name}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? "text-white" : "text-indigo-400"}`} />
+                  <Icon className={`w-5 h-5 ${isActive ? "text-white" : "text-slate-500"}`} />
                   <span className={sidebarOpen ? "font-bold truncate" : "text-[10px] text-slate-400 font-medium truncate w-full"}>
                     {sidebarOpen ? item.name : item.name.split(" ")[0]}
                   </span>

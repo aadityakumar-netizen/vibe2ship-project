@@ -77,244 +77,144 @@ export default function DashboardOverview({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/40 border border-slate-800 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-lg">
-        <div className="space-y-1">
+      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/40 border border-slate-700 p-8 md:p-10 rounded-3xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 rounded-full filter blur-3xl pointer-events-none"></div>
+        <div className="space-y-2 relative z-10">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-indigo-600/20 text-indigo-400 rounded-lg text-xs font-bold border border-indigo-500/10">
+            <span className="px-2.5 py-1 bg-indigo-600/20 text-indigo-400 rounded-lg text-xs font-bold border border-indigo-500/10">
               Live Control Hub
             </span>
             <span className="text-xs text-slate-400 font-mono">
               {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}
             </span>
           </div>
-          <h2 className="text-xl font-extrabold text-slate-100 font-sans tracking-tight">
+          <h2 className="text-3xl font-extrabold text-slate-100 font-sans tracking-tight">
             Greetings, {currentUser?.name || "Academic Warrior"}!
           </h2>
-          <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
+          <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
             Welcome to your student nerve-center. Tackle impending deadlines, trigger micro-sprints, track streaks, and orchestrate time-blocks seamlessly.
           </p>
         </div>
 
         {/* Dynamic micro stats bar */}
-        <div className="flex items-center gap-4 bg-slate-950/60 p-3 border border-slate-850 rounded-xl shrink-0">
-          <div className="text-center px-2">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Completed</span>
-            <span className="font-mono text-base font-extrabold text-emerald-400">{completedTasks.length}</span>
+        <div className="flex items-center gap-6 bg-slate-950/80 p-5 border border-slate-700 rounded-2xl shrink-0 relative z-10 w-full lg:w-auto justify-around lg:justify-start">
+          <div className="text-center px-4">
+            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Completed</span>
+            <span className="font-mono text-2xl font-black text-emerald-400">{completedTasks.length}</span>
           </div>
-          <div className="w-px h-8 bg-slate-800"></div>
-          <div className="text-center px-2">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Remaining</span>
-            <span className="font-mono text-base font-extrabold text-indigo-400">{activeTasks.length}</span>
+          <div className="w-px h-12 bg-slate-700"></div>
+          <div className="text-center px-4">
+            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Remaining</span>
+            <span className="font-mono text-2xl font-black text-indigo-400">{activeTasks.length}</span>
           </div>
-          <div className="w-px h-8 bg-slate-800"></div>
-          <div className="text-center px-2">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Est. Load</span>
-            <span className="font-mono text-base font-extrabold text-amber-400">
+          <div className="w-px h-12 bg-slate-700"></div>
+          <div className="text-center px-4">
+            <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Est. Load</span>
+            <span className="font-mono text-2xl font-black text-amber-400">
               {totalWorkMinutes > 60 ? `${Math.round(totalWorkMinutes / 60 * 10) / 10}h` : `${totalWorkMinutes}m`}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Grid: Live KPI widgets and Quick Add commitment */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column: Dynamic KPIs & Quick view */}
-        <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider">Operational Health Indicators</h3>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {/* KPI 1 */}
-            <div className="bg-slate-900 border border-slate-850 p-3.5 rounded-xl flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-wider">Immediate Threat</span>
-                <ShieldAlert className="w-4 h-4 text-rose-500" />
-              </div>
-              <div className="mt-2.5">
-                <span className="text-xl font-bold font-mono text-rose-500 block">
-                  {highPriorityTasks.length}
-                </span>
-                <span className="text-[9px] text-slate-500 leading-none">critical tasks pending</span>
-              </div>
+      {/* Operational Health Indicators Grid (Expanded to Full-Width) */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-black uppercase text-slate-400 tracking-wider">Operational Health Indicators</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* KPI 1 */}
+          <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl flex flex-col justify-between hover:border-indigo-500/40 hover:bg-slate-850/40 transition-all duration-300 group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Immediate Threat</span>
+              <ShieldAlert className="w-5 h-5 text-rose-500 group-hover:scale-110 transition-transform" />
             </div>
-
-            {/* KPI 2 */}
-            <div className="bg-slate-900 border border-slate-850 p-3.5 rounded-xl flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-wider">Habit Momentum</span>
-                <Flame className="w-4 h-4 text-amber-500" />
-              </div>
-              <div className="mt-2.5">
-                <span className="text-xl font-bold font-mono text-amber-500 block">
-                  {maxStreak}
-                </span>
-                <span className="text-[9px] text-slate-500 leading-none">longest active streak</span>
-              </div>
-            </div>
-
-            {/* KPI 3 */}
-            <div className="bg-slate-900 border border-slate-850 p-3.5 rounded-xl flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-wider">Time-Block Slots</span>
-                <Timer className="w-4 h-4 text-emerald-500" />
-              </div>
-              <div className="mt-2.5">
-                <span className="text-xl font-bold font-mono text-emerald-400 block">
-                  {timeBlocks.length}
-                </span>
-                <span className="text-[9px] text-slate-500 leading-none">intervals mapped today</span>
-              </div>
-            </div>
-
-            {/* KPI 4 */}
-            <div className="bg-slate-900 border border-slate-850 p-3.5 rounded-xl flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-wider">Smart Alerts</span>
-                <AlertTriangle className="w-4 h-4 text-indigo-500" />
-              </div>
-              <div className="mt-2.5">
-                <span className="text-xl font-bold font-mono text-indigo-500 block">
-                  {unreadRemindersCount}
-                </span>
-                <span className="text-[9px] text-slate-500 leading-none">active risk notices</span>
-              </div>
+            <div className="mt-4">
+              <span className="text-4xl font-black font-mono text-rose-550 block">
+                {highPriorityTasks.length}
+              </span>
+              <span className="text-xs text-slate-400 leading-none">critical tasks pending</span>
             </div>
           </div>
 
-          {/* Quick-look next items */}
-          <div className="bg-slate-900/40 border border-slate-850 rounded-xl p-4.5 space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Highest Urgency Stack</span>
-              <button 
-                onClick={() => setActiveNavTab("priorities")}
-                className="text-[9.5px] text-indigo-400 hover:text-indigo-300 font-bold transition flex items-center gap-1 cursor-pointer"
-              >
-                Go to Agenda <ArrowRight className="w-3 h-3" />
-              </button>
+          {/* KPI 2 */}
+          <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl flex flex-col justify-between hover:border-indigo-500/40 hover:bg-slate-850/40 transition-all duration-300 group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Habit Momentum</span>
+              <Flame className="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform" />
             </div>
+            <div className="mt-4">
+              <span className="text-4xl font-black font-mono text-amber-500 block">
+                {maxStreak}
+              </span>
+              <span className="text-xs text-slate-400 leading-none">longest active streak</span>
+            </div>
+          </div>
 
-            {highPriorityTasks.length === 0 ? (
-              <div className="py-6 text-center text-slate-500 text-[11px] italic">
-                No high-urgency tasks found! Use the quick-add widget to insert a task.
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {highPriorityTasks.slice(0, 3).map((task) => (
-                  <div key={task.id} className="flex justify-between items-center p-2.5 bg-slate-950/60 border border-slate-850/60 rounded-xl">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
-                      <span className="text-[11px] font-bold text-slate-200 truncate">{task.title}</span>
+          {/* KPI 3 */}
+          <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl flex flex-col justify-between hover:border-indigo-500/40 hover:bg-slate-850/40 transition-all duration-300 group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Time-Block Slots</span>
+              <Timer className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="mt-4">
+              <span className="text-4xl font-black font-mono text-emerald-400 block">
+                {timeBlocks.length}
+              </span>
+              <span className="text-xs text-slate-400 leading-none">intervals mapped today</span>
+            </div>
+          </div>
+
+          {/* KPI 4 */}
+          <div className="bg-slate-900 border border-slate-700 p-6 rounded-2xl flex flex-col justify-between hover:border-indigo-500/40 hover:bg-slate-850/40 transition-all duration-300 group">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-extrabold text-slate-300 uppercase tracking-wider">Smart Alerts</span>
+              <AlertTriangle className="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="mt-4">
+              <span className="text-4xl font-black font-mono text-indigo-500 block">
+                {unreadRemindersCount}
+              </span>
+              <span className="text-xs text-slate-400 leading-none">active risk notices</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Highest Urgency Stack (Now glorious and wide) */}
+      <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 md:p-8 space-y-4 shadow-md">
+        <div className="flex justify-between items-center pb-2 border-b border-slate-700">
+          <div className="space-y-1">
+            <span className="text-xs font-black text-indigo-400 uppercase tracking-wider block">Task Prioritization Panel</span>
+            <h4 className="font-extrabold text-slate-100 text-lg">Highest Urgency Stack</h4>
+          </div>
+        </div>
+
+        {highPriorityTasks.length === 0 ? (
+          <div className="py-12 text-center text-slate-400 text-sm italic">
+            No high-urgency tasks found! All clear.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {highPriorityTasks.slice(0, 6).map((task) => (
+              <div key={task.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-slate-950/60 hover:bg-slate-950/90 border border-slate-700 rounded-xl transition duration-200 gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0 animate-pulse"></span>
+                  <div className="min-w-0">
+                    <span className="text-sm font-bold text-slate-100 block truncate">{task.title}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] uppercase font-bold text-indigo-400 tracking-wider">{task.category}</span>
+                      <span className="text-[10px] text-slate-400">• {task.estimatedTime} mins estimated</span>
                     </div>
-                    <span className="text-[9.5px] font-mono text-rose-400 bg-rose-950/30 border border-rose-900/30 px-2 py-0.5 rounded-md shrink-0">
-                      Due {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right column: Quick-Add Form */}
-        <div className="bg-slate-900 border border-slate-850 rounded-2xl p-4.5 space-y-3.5 shadow-sm">
-          <div className="space-y-0.5">
-            <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block">Dashboard Fast-Track</span>
-            <h4 className="font-bold text-slate-100 text-xs">Quickly Commit Task</h4>
-          </div>
-
-          <form onSubmit={handleQuickAdd} className="space-y-2.5">
-            <div className="space-y-1">
-              <input
-                type="text"
-                required
-                placeholder="What assignment is hovering?"
-                value={quickTitle}
-                onChange={(e) => setQuickTitle(e.target.value)}
-                className="w-full px-3 py-1.5 text-[11px] border border-slate-800 bg-slate-950 text-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Deadline</label>
-                <input
-                  type="datetime-local"
-                  required
-                  value={quickDueDate}
-                  onChange={(e) => setQuickDueDate(e.target.value)}
-                  className="w-full px-2 py-1.5 text-[10px] border border-slate-800 bg-slate-950 text-slate-200 rounded-xl focus:outline-none cursor-pointer"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Est. Minutes</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="480"
-                  required
-                  value={quickEstTime}
-                  onChange={(e) => setQuickEstTime(Number(e.target.value))}
-                  className="w-full px-2 py-1.5 text-[10px] border border-slate-800 bg-slate-950 text-slate-200 rounded-xl focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Category</label>
-                <select
-                  value={quickCategory}
-                  onChange={(e) => setQuickCategory(e.target.value as Task["category"])}
-                  className="w-full px-2 py-1.5 text-[10px] border border-slate-800 bg-slate-950 text-slate-200 rounded-xl focus:outline-none cursor-pointer"
-                >
-                  <option value="assignment">Assignment</option>
-                  <option value="meeting">Meeting</option>
-                  <option value="bill">Bill/Fee</option>
-                  <option value="interview">Interview</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Threat Rating</label>
-                <div className="flex gap-1.5 mt-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setQuickImportance("high")}
-                    className={`flex-1 py-1 text-[9.5px] font-bold rounded-lg transition border ${
-                      quickImportance === "high"
-                        ? "bg-rose-950/40 text-rose-400 border-rose-800"
-                        : "bg-slate-950 text-slate-400 border-slate-850 hover:bg-slate-850"
-                    }`}
-                  >
-                    Urgent
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setQuickImportance("normal")}
-                    className={`flex-1 py-1 text-[9.5px] font-bold rounded-lg transition border ${
-                      quickImportance === "normal"
-                        ? "bg-slate-800 text-slate-200 border-slate-700"
-                        : "bg-slate-950 text-slate-400 border-slate-850 hover:bg-slate-850"
-                    }`}
-                  >
-                    Normal
-                  </button>
                 </div>
+                <span className="text-xs font-mono text-rose-450 bg-rose-950/30 border border-rose-900/40 px-3 py-1 rounded-lg shrink-0 self-stretch sm:self-auto text-center">
+                  Due {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full mt-1.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10.5px] font-extrabold transition shadow-sm flex items-center justify-center gap-1 cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Register & Schedule</span>
-            </button>
-          </form>
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
