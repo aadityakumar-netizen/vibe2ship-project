@@ -117,14 +117,14 @@ export default function AuthScreen({ onLoginSuccess, darkMode }: AuthScreenProps
 
   return (
     <div className={`min-h-screen flex items-center justify-center p-6 transition-colors duration-300 ${
-      darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-800"
+      darkMode ? "bg-slate-925 text-slate-100" : "bg-slate-50 text-slate-800"
     }`}>
       {/* Decorative background ambient blobs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 dark:bg-indigo-600/5 rounded-full filter blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-600/10 dark:bg-violet-600/5 rounded-full filter blur-3xl pointer-events-none"></div>
 
       <div className={`w-full max-w-md p-8 rounded-3xl border transition-all duration-300 relative z-10 shadow-2xl ${
-        darkMode ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"
+        darkMode ? "bg-slate-900 border-slate-700" : "bg-white border-slate-100"
       }`}>
         {/* App Logo / Heading */}
         <div className="text-center mb-8">

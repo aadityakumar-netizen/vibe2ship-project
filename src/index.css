@@ -4,6 +4,79 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
+
+  /* Redesign color palette for dark theme as requested */
+  --color-slate-950: #111827; /* Navbar / Sidebar / Secondary Background */
+  --color-slate-925: #0F172A; /* Primary Background */
+  --color-slate-900: #1E293B; /* Card Background */
+  --color-slate-850: #273549; /* Card Hover */
+  --color-slate-800: #1E293B; /* Input Background */
+  --color-slate-700: #334155; /* Borders */
+  --color-slate-600: #475569; /* Input Border */
+  --color-slate-400: #94A3B8; /* Muted Text */
+  --color-slate-300: #CBD5E1; /* Secondary Text */
+  --color-slate-200: #CBD5E1; /* Secondary Text */
+  --color-slate-100: #F8FAFC; /* Primary Text */
+  --color-slate-50: #F8FAFC;  /* Primary Text */
+
+  /* Primary Accent: #3B82F6 */
+  /* Button Hover: #2563EB */
+  --color-indigo-400: #3B82F6;
+  --color-indigo-500: #3B82F6;
+  --color-indigo-600: #3B82F6;
+  --color-indigo-700: #2563EB;
+  --color-indigo-800: #2563EB;
+
+  /* Secondary Accent: #06B6D4 */
+  --color-violet-400: #06B6D4;
+  --color-violet-500: #06B6D4;
+  --color-violet-550: #06B6D4;
+  --color-violet-600: #06B6D4;
+  --color-violet-650: #06B6D4;
+  --color-violet-700: #06B6D4;
+
+  /* Success: #10B981 */
+  --color-emerald-400: #10B981;
+  --color-emerald-500: #10B981;
+  --color-emerald-600: #10B981;
+  --color-green-400: #10B981;
+  --color-green-500: #10B981;
+  --color-green-600: #10B981;
+
+  /* Warning: #F59E0B */
+  --color-amber-400: #F59E0B;
+  --color-amber-500: #F59E0B;
+  --color-amber-600: #F59E0B;
+  --color-yellow-400: #F59E0B;
+  --color-yellow-500: #F59E0B;
+  --color-yellow-600: #F59E0B;
+
+  /* Emergency/Danger: #EF4444 */
+  --color-rose-400: #EF4444;
+  --color-rose-500: #EF4444;
+  --color-rose-550: #EF4444;
+  --color-rose-600: #EF4444;
+  --color-red-400: #EF4444;
+  --color-red-500: #EF4444;
+  --color-red-600: #EF4444;
+
+  /* Link Hover: #60A5FA */
+  --color-indigo-300: #60A5FA;
+  --color-blue-400: #60A5FA;
+  --color-blue-500: #3B82F6;
+  --color-blue-600: #2563EB;
+}
+
+/* Global Dark Theme Forms and Selections overrides for pristine, high-contrast inputs */
+.dark input, .dark select, .dark textarea {
+  background-color: #1E293B !important;
+  border-color: #475569 !important;
+  color: #F8FAFC !important;
+}
+
+.dark input:focus, .dark select:focus, .dark textarea:focus {
+  border-color: #3B82F6 !important;
+  --tw-ring-color: rgba(59, 130, 246, 0.3) !important;
 }
 
 /* Custom scrollbars that adapt elegantly to light and dark theme modes */

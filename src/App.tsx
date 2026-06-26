@@ -433,7 +433,7 @@ export default function App() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-925 transition-colors duration-300">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-indigo-600"></div>
       </div>
     );
@@ -453,11 +453,11 @@ export default function App() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 flex flex-col antialiased ${
-      darkMode ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-800"
+      darkMode ? "bg-slate-925 text-slate-100" : "bg-slate-50 text-slate-800"
     }`}>
       
       {/* Upper Navigation & Title Container with Professional Polish */}
-      <header className="h-16 border-b px-4 flex items-center justify-between shrink-0 sticky top-0 z-40 shadow-xs bg-slate-950 border-slate-900 text-slate-100 transition-colors duration-300">
+      <header className="h-16 border-b px-4 flex items-center justify-between shrink-0 sticky top-0 z-40 shadow-xs bg-slate-950 border-slate-700 text-slate-100 transition-colors duration-300">
         <div className="flex items-center gap-2">
           {/* Hamburger menu button */}
           <button
@@ -585,7 +585,7 @@ export default function App() {
         {/* Left Navigation Sidebar */}
         <aside className={`
           fixed md:static inset-y-0 left-0 z-30 
-          ${sidebarOpen ? "translate-x-0 w-64 border-r border-slate-900" : "-translate-x-full md:-translate-x-full w-0 overflow-hidden border-r-0"} 
+          ${sidebarOpen ? "translate-x-0 w-64 border-r border-slate-700" : "-translate-x-full md:-translate-x-full w-0 overflow-hidden border-r-0"} 
           transition-all duration-300 ease-in-out
           flex flex-col shrink-0 bg-slate-950 text-slate-100 h-[calc(100vh-4rem)] overflow-y-auto
         `}>
@@ -644,20 +644,7 @@ export default function App() {
             })}
           </div>
 
-          {/* Collapsible operational footer inside sidebar */}
-          {sidebarOpen && (
-            <div className="mt-auto p-4 border-t border-slate-900 bg-slate-950/40 space-y-2.5 hidden md:block">
-              <div className="space-y-1">
-                <span className="text-[9.5px] font-bold text-slate-500 uppercase tracking-widest block">Stress Mitigation Load</span>
-                <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-indigo-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${Math.min(100, pendingCount * 25)}%` }}></div>
-                </div>
-              </div>
-              <p className="text-[10px] text-slate-500 leading-normal">
-                Nerve center online and safeguarding.
-              </p>
-            </div>
-          )}
+
         </aside>
 
         {/* Content Panel Area */}
