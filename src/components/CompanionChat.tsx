@@ -173,10 +173,10 @@ export default function CompanionChat({
   return (
     <div
       id="companion-chat"
-      className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col h-[650px]"
+      className="bg-white dark:bg-slate-900 p-4 px-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col h-[440px]"
     >
       {/* Header element */}
-      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 mb-4 shrink-0">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5 mb-2.5 shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="relative">
             <span className="p-2 bg-indigo-600 text-white rounded-lg shadow-sm inline-block">
@@ -215,17 +215,17 @@ export default function CompanionChat({
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto space-y-4 pr-1 min-h-0 py-2">
+      <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0 py-1">
         {chatHistory.length === 0 && (
-          <div className="flex flex-col items-center justify-center text-center h-full py-10 space-y-4 px-4 animate-fade-in">
-            <span className="p-4 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-100 dark:border-indigo-900/30 shadow-2xs">
-              <Bot className="w-8 h-8 animate-pulse" />
+          <div className="flex flex-col items-center justify-center text-center h-full py-1 space-y-1.5 px-4 animate-fade-in">
+            <span className="p-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-100 dark:border-indigo-900/30 shadow-3xs">
+              <Bot className="w-5 h-5 animate-pulse" />
             </span>
-            <div className="space-y-1.5">
+            <div className="space-y-0.5">
               <h4 className="font-bold text-slate-800 dark:text-slate-100 text-xs">
                 No Active Chat Ledger
               </h4>
-              <p className="text-slate-500 dark:text-slate-400 text-[11px] max-w-xs leading-relaxed">
+              <p className="text-slate-500 dark:text-slate-400 text-[10.5px] max-w-xs leading-normal">
                 Consult Lumina AI Companion on homework prep, draft extension email messages, or get immediate mental relaxation guidelines.
               </p>
             </div>
@@ -257,15 +257,15 @@ export default function CompanionChat({
             <div
               className={`p-4 rounded-2xl text-xs leading-relaxed ${
                 msg.sender === "user"
-                  ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 rounded-tr-none font-medium"
+                  ? "bg-indigo-600 text-white rounded-tr-none font-medium shadow-sm"
                   : "bg-slate-50 dark:bg-slate-950/40 text-slate-800 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-800/80"
               }`}
             >
               <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
               <span
-                className={`text-[9px] mt-1.5 block text-right font-medium opacity-60 ${
+                className={`text-[9px] mt-1.5 block text-right font-medium opacity-75 ${
                   msg.sender === "user"
-                    ? "text-slate-300 dark:text-slate-700"
+                    ? "text-indigo-100"
                     : "text-slate-400 dark:text-slate-500"
                 }`}
               >
@@ -359,7 +359,7 @@ export default function CompanionChat({
 
       {/* Suggested pill starters */}
       {chatHistory.length <= 2 && (
-        <div className="py-2 flex flex-wrap gap-2 border-t border-slate-100 dark:border-slate-850 shrink-0">
+        <div className="py-1 flex flex-wrap gap-2 border-t border-slate-100 dark:border-slate-850 shrink-0">
           {promptPills.map((pill, idx) => (
             <button
               key={idx}
@@ -375,7 +375,7 @@ export default function CompanionChat({
       {/* Input container */}
       <form
         onSubmit={handleKeyboardSend}
-        className="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-800 shrink-0 items-center"
+        className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 shrink-0 items-center"
       >
         <input
           id="input-chat-message"

@@ -307,6 +307,15 @@ export default function App() {
     }
   }, [currentUser]);
 
+  // Centralized tab change scroll to top
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+    const contentPanel = document.getElementById("content-panel");
+    if (contentPanel) {
+      contentPanel.scrollTo({ top: 0 });
+    }
+  }, [activeNavTab]);
+
   // Logout Handler
   const handleLogout = () => {
     setCurrentUser(null);
@@ -648,8 +657,8 @@ export default function App() {
         </aside>
 
         {/* Content Panel Area */}
-        <div className="flex-1 overflow-y-auto min-w-0">
-          <main className="max-w-7xl w-full mx-auto p-6 space-y-6">
+        <div id="content-panel" className="flex-1 overflow-y-auto min-w-0 scroll-smooth">
+          <main className={`max-w-7xl w-full mx-auto ${activeNavTab === "coach" ? "p-3 pt-1 pb-2.5 space-y-3" : "p-6 space-y-6"}`}>
 
         {/* Dynamic Display components rendering */}
         <div className="transition-all duration-300">
