@@ -158,66 +158,56 @@ export default function AuthScreen({ onLoginSuccess, darkMode }: AuthScreenProps
         <form onSubmit={handleAuth} className="space-y-4">
           {isSignUp && (
             <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
-                Full Name
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <UserIcon className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Full Name</span>
               </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-450">
-                  <UserIcon className="w-4 h-4" />
-                </span>
-                <input
-                  type="text"
-                  placeholder="e.g. Aditya Clash"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium ${
-                    darkMode
-                      ? "bg-slate-750 border-slate-650 text-white placeholder-slate-450"
-                      : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
-                  }`}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
-              Email Address
-            </label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-450">
-                <Mail className="w-4 h-4" />
-              </span>
               <input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`w-full pl-10 pr-4 py-3 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium ${
+                type="text"
+                placeholder="e.g. Aditya Clash"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={`w-full px-3.5 py-3 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium ${
                   darkMode
-                    ? "bg-slate-700 border-slate-600 text-white placeholder-slate-400"
+                    ? "bg-[#121B2B] border-slate-700 text-white placeholder-slate-500"
                     : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
                 }`}
               />
             </div>
+          )}
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Email Address</span>
+            </label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full px-3.5 py-3 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium ${
+                darkMode
+                  ? "bg-[#121B2B] border-slate-700 text-white placeholder-slate-500"
+                  : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"
+              }`}
+            />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
-              Password
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Password</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-450">
-                <Lock className="w-4 h-4" />
-              </span>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="•••••"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full pl-10 pr-11 py-3 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium ${
+                className={`w-full pl-3.5 pr-11 py-3 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/30 focus:border-indigo-500 transition font-medium ${
                   darkMode
-                    ? "bg-slate-700 border-slate-600 text-white placeholder-slate-400"
+                    ? "bg-[#121B2B] border-slate-700 text-white placeholder-slate-500"
                     : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-450"
                 }`}
               />

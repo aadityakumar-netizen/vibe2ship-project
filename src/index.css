@@ -73,9 +73,6 @@
   background-color: #121B2B !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: #F8FAFC !important;
-  border-radius: 12px !important;
-  padding: 10px 14px !important;
-  font-size: 13px !important;
   transition: all 200ms ease-in-out !important;
 }
 
